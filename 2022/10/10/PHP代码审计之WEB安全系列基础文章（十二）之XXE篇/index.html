@@ -1,0 +1,760 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Power7089">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  今天为大家带来PHP代码审计基础系列文章第十二篇之XXE篇。 这是【炼石计划@PHP代码审计】知识星球第二阶段的原创">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP代码审计之WEB安全系列基础文章（十二）之XXE篇">
+<meta property="og:url" content="http://example.com/2022/10/10/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8BWEB%E5%AE%89%E5%85%A8%E7%B3%BB%E5%88%97%E5%9F%BA%E7%A1%80%E6%96%87%E7%AB%A0%EF%BC%88%E5%8D%81%E4%BA%8C%EF%BC%89%E4%B9%8BXXE%E7%AF%87/index.html">
+<meta property="og:site_name" content="Power7089">
+<meta property="og:description" content="【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  今天为大家带来PHP代码审计基础系列文章第十二篇之XXE篇。 这是【炼石计划@PHP代码审计】知识星球第二阶段的原创">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif">
+<meta property="og:image" content="http://example.com/img/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%A3%E4%BC%A0%E6%B5%B7%E6%8A%A5.png">
+<meta property="og:image" content="http://example.com/img/image-20220807181728222.png">
+<meta property="og:image" content="http://example.com/img/image-20220807182307608.png">
+<meta property="og:image" content="http://example.com/img/image-20220807200101166.png">
+<meta property="og:image" content="http://example.com/img/image-20220807200041079.png">
+<meta property="og:image" content="http://example.com/img/image-20220808135547000.png">
+<meta property="og:image" content="http://example.com/img/image-20220808170045646.png">
+<meta property="og:image" content="http://example.com/img/image-20220811174812578.png">
+<meta property="og:image" content="http://example.com/img/image-20220812101303799.png">
+<meta property="og:image" content="http://example.com/img/image-20220812110637007.png">
+<meta property="og:image" content="http://example.com/img/image-20220812144238980.png">
+<meta property="og:image" content="http://example.com/img/image-20220812145948579.png">
+<meta property="og:image" content="http://example.com/img/image-20220812145849320.png">
+<meta property="og:image" content="http://example.com/img/image-20220812150906447.png">
+<meta property="og:image" content="http://example.com/img/image-20220812161239861.png">
+<meta property="article:published_time" content="2022-10-10T03:27:01.000Z">
+<meta property="article:modified_time" content="2022-10-10T03:28:54.201Z">
+<meta property="article:author" content="Power7089">
+<meta property="article:tag" content="PHP代码审计基础">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>PHP代码审计之WEB安全系列基础文章（十二）之XXE篇 - Power7089</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":88,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"yxPaB1iPDz9V47o8ASUol6fh-gzGzoHsz","app_key":"PyweBFOvttknCdKW7DspREFV","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Power7089的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="PHP代码审计之WEB安全系列基础文章（十二）之XXE篇"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-10 11:27" pubdate>
+          2022年10月10日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          66 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">PHP代码审计之WEB安全系列基础文章（十二）之XXE篇</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>【如需转载，请详细表明来源，请勿设置原创】</p>
+<p>嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。</p>
+<p>欢迎大家扫描下方二维码关注 <strong>“闪石星曜CyberSecurity”</strong> 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。</p>
+<p><img src="/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif" srcset="/img/loading.gif" lazyload alt="公众号"></p>
+<p>今天为大家带来PHP代码审计基础系列文章<strong>第十二篇之XXE篇</strong>。</p>
+<p><em>这是【炼石计划@PHP代码审计】知识星球第二阶段的原创基础系列文章，拿出部分课程分享给零基础的朋友学习。本系列原创基础文章涵盖了PHP代码审计中常见的十余种WEB漏洞，是匹夫老师精心的创作，欢迎关注我的公众号跟着一起学习。</em></p>
+<p><em>【炼石计划@PHP代码审计】是一个系统化从入门到提升学习PHP代码审计的成长型知识星球。这里不仅注重夯实基础，更加专注实战进阶。强烈推荐加入我们，一起来实战提升PHP代码审计。</em></p>
+<p><img src="/img/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%A3%E4%BC%A0%E6%B5%B7%E6%8A%A5.png" srcset="/img/loading.gif" lazyload alt="公众号"></p>
+<h1 id="PHP代码审计之XXE-XML外部实体注入"><a href="#PHP代码审计之XXE-XML外部实体注入" class="headerlink" title="PHP代码审计之XXE(XML外部实体注入)"></a>PHP代码审计之XXE(XML外部实体注入)</h1><h2 id="1-XXE原理"><a href="#1-XXE原理" class="headerlink" title="1.XXE原理"></a>1.XXE原理</h2><p>xxe其实也叫做XML外部实体化注入，该漏洞是由于站点某些功能处可以人为引入不安全的外部实体数据，在处理数据时引发的不安全问题。</p>
+<p>那为什么会叫做外部实体注入而不叫内部实体注入呢？</p>
+<p>其实是由于XXE的危害主要来自于dtd文件中引入的外部实体，例如可以通过一些伪协议：如file、ftp、data、phar等来达到我们想要的效果。</p>
+<h2 id="2-XML基础知识"><a href="#2-XML基础知识" class="headerlink" title="2.XML基础知识"></a>2.XML基础知识</h2><p>我们在学习挖掘XXE漏洞时，首先得了解一下XML语法知识以及如何构造XML文档结构，这对于后面XXE漏洞利用是必要的一步。</p>
+<h3 id="2-1-XML文档实例"><a href="#2-1-XML文档实例" class="headerlink" title="2.1 XML文档实例"></a>2.1 XML文档实例</h3><p>XML文档结构包括<code>XML声明</code>、<code>DTD文档类型定义</code>（可选）、<code>文档元素</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;!--XML声明，它定义 XML 的版本（1.0）和所使用的编码（UTF-8 : 万国码, 可显示各种语言）--&gt;<br><br>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br><br>&lt;!--文档类型定义--&gt;<br><br>&lt;!DOCTYPE note [  &lt;!--定义此文档是 note 类型的文档--&gt;<br><br>&lt;!ELEMENT note (to,from,heading,body)&gt;  &lt;!--定义note元素有四个元素--&gt;<br><br>&lt;!ELEMENT to (#PCDATA)&gt;     &lt;!--定义to元素为”#PCDATA”类型--&gt;<br><br>&lt;!ELEMENT from (#PCDATA)&gt;   &lt;!--定义from元素为”#PCDATA”类型--&gt;<br><br>&lt;!ELEMENT head (#PCDATA)&gt;   &lt;!--定义head元素为”#PCDATA”类型--&gt;<br><br>&lt;!ELEMENT body (#PCDATA)&gt;   &lt;!--定义body元素为”#PCDATA”类型--&gt;<br><br>]]]&gt;<br></code></pre></td></tr></table></figure>
+
+<p><code>&lt;note&gt;&lt;/note&gt;</code>描述文档的<strong>根元素</strong>；中间的<code>&lt;to&gt;&lt;/to&gt;...&lt;body&gt;&lt;/body&gt;</code>4 行描述根的 4 个<strong>子元素</strong>，这些元素都可以由用户自定义，格式有点像HTML、但是比HTML更加灵活。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;!--文档元素--&gt;<br>&lt;note&gt;<br>&lt;to&gt;I&lt;/to&gt;<br>&lt;from&gt;Like&lt;/from&gt;<br>&lt;heading&gt;PHP&lt;/heading&gt;<br>&lt;body&gt;PHP is the best in the world!&lt;/body&gt;<br>&lt;/note&gt;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-2-DTD-文档类型定义"><a href="#2-2-DTD-文档类型定义" class="headerlink" title="2.2 DTD(文档类型定义)"></a>2.2 DTD(文档类型定义)</h3><p>DTD的作用是用来规定文档元素类型的，DTD可以在XML文档内部申明，也可以引用外部DTD。</p>
+<p><strong>DTD代码示例：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;!--文档类型定义--&gt;<br><br>&lt;!DOCTYPE note [  &lt;!--定义此文档是 note 类型的文档--&gt;<br><br>&lt;!ELEMENT note (to,from,heading,body)&gt;  &lt;!--定义note元素有四个元素--&gt;<br><br>&lt;!ELEMENT to (#PCDATA)&gt;     &lt;!--定义to元素为”#PCDATA”类型--&gt;<br><br>&lt;!ELEMENT from (#PCDATA)&gt;   &lt;!--定义from元素为”#PCDATA”类型--&gt;<br><br>&lt;!ELEMENT head (#PCDATA)&gt;   &lt;!--定义head元素为”#PCDATA”类型--&gt;<br><br>&lt;!ELEMENT body (#PCDATA)&gt;   &lt;!--定义body元素为”#PCDATA”类型--&gt;<br><br>]]]&gt;<br></code></pre></td></tr></table></figure>
+
+<p>DTD分为<strong>内部申明</strong>和<strong>外部申明</strong>,我们所要利用的就是DTD中的外部申明。</p>
+<p><strong>内部申明代码示例：</strong></p>
+<p>内部申明格式：<code>&lt;!DOCTYPE 根元素 [元素申明]&gt;</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br><br>&lt;!DOCTYPE note [<br><br>  &lt;!ELEMENT note (to,from,heading,body)&gt;<br><br>  &lt;!ELEMENT to      (#PCDATA)&gt;<br><br>  &lt;!ELEMENT from    (#PCDATA)&gt;<br><br>  &lt;!ELEMENT heading (#PCDATA)&gt;<br><br>  &lt;!ELEMENT body    (#PCDATA)&gt;<br><br>]&gt;<br><br>&lt;!--文档元素--&gt;<br>&lt;note&gt;<br>&lt;to&gt;PHP is&lt;/to&gt;<br>&lt;from&gt;the best&lt;/from&gt;<br>&lt;heading&gt;in the&lt;/heading&gt;<br>&lt;body&gt; world!&lt;/body&gt;<br>&lt;/note&gt;<br></code></pre></td></tr></table></figure>
+
+<p><strong>外部申明代码示例：</strong></p>
+<p>外部申明格式：<code>&lt;!DOCTYPE 根元素 SYSTEM ”外部DTD文件“&gt;</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br><br>&lt;!DOCTYPE note SYSTEM &quot;http://IP/eval.dtd&quot;&gt;<br><br>eval.dtd中的内容如上述DTD格式相同<br>&lt;!ELEMENT note (to,from,heading,body)&gt;<br><br>&lt;!ELEMENT to (#PCDATA)&gt;<br><br>&lt;!ELEMENT from (#PCDATA)&gt;<br><br>&lt;!ELEMENT heading (#PCDATA)&gt;<br><br>&lt;!ELEMENT body (#PCDATA)&gt;<br></code></pre></td></tr></table></figure>
+
+<p>构成DTD文件内容的叫做DTD实体，DTD实体分为<strong>内部实体</strong>、<strong>外部实体</strong>，内外部实体，又存在<strong>一般实体</strong>、<strong>参数实体</strong>。</p>
+<p>一般实体的引用方式为：&amp;实体名</p>
+<p>参数实体的引用方式为：%实体名</p>
+<p><strong>注意：在定义参数实体时%与参数实体中间要有空格分割且参数实体只能在DTD内部申明和引用</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;!DOCTYPE ceshi [<br><br>    &lt;!ENTITY to  &quot;PHP&quot;&gt;     &lt;!-- 内部一般实体 --&gt;<br><br>    &lt;!ENTITY % from &quot;is the best&quot;&gt;     &lt;!-- 内部参数实体 --&gt;<br><br>    &lt;!ENTITY heading SYSTEM &quot;http://ip/eval.dtd&quot;&gt;    &lt;!-- 外部一般实体 --&gt;<br><br>    &lt;!ENTITY % body SYSTEM &quot;file:///eval.dtd&quot;&gt;        &lt;!-- 外部参数实体 --&gt;<br><br>    %from;            &lt;!-- 引用参数实体 --&gt;<br><br>]&gt;<br><br>&lt;ceshi&gt;&amp;heading;&lt;/ceshi&gt;  &lt;!-- 引用一般实体 --&gt;<br></code></pre></td></tr></table></figure>
+
+<p>参数实体可以嵌套进行使用，但是注意在里面的参数实体%要进行HTML实体编码。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml-dtd">&lt;!DOCTYPE ceshi [<br><br>    &lt;!ENTITY % body &#x27;&lt;!ENTITY &amp;#x25; content SYSTEM &quot;http://ip/eval.dtd&quot;&gt;&#x27;&gt;<br><br>]&gt;<br><br>&lt;ceshi&gt;&amp;content;&lt;/ceshi&gt;<br></code></pre></td></tr></table></figure>
+
+<h2 id="4-XXE分类"><a href="#4-XXE分类" class="headerlink" title="4.XXE分类"></a>4.XXE分类</h2><h3 id="4-1-有回显XXE"><a href="#4-1-有回显XXE" class="headerlink" title="4.1 有回显XXE"></a>4.1 有回显XXE</h3><p>有回显XXE顾名思义就是在响应包中回显我们传入payload的结果建议大家做实验的时候使用PHP5.2、5.3、5.4因为在这些版本中libxml的版本还是2.7.X，在libxml版本<strong>大于2.9.1</strong>的时候PHP默认已经不解析外部实体了，如果是高版本PHP需要代码中<code>libxml_disable_entity_loader(false)</code>开启。</p>
+<p>这里我们构造DTD实体，将实体中的内容解析并输出到前端页面</p>
+<p><img src="/img/image-20220807181728222.png" srcset="/img/loading.gif" lazyload alt="image-20220807181728222"></p>
+<h3 id="4-2-无回显XXE（bind-XXE）"><a href="#4-2-无回显XXE（bind-XXE）" class="headerlink" title="4.2 无回显XXE（bind XXE）"></a>4.2 无回显XXE（bind XXE）</h3><p>无回显XXE则是返回包没有任何回显内容，我们无法在响应包中得到我们想要的数据。</p>
+<p>同样的测试代码这里却没有回显</p>
+<p><img src="/img/image-20220807182307608.png" srcset="/img/loading.gif" lazyload alt="image-20220807182307608"></p>
+<p>这种情况下我们如何判断该处是否存在XXE漏洞呢？</p>
+<p>其实我们可以引用外部参数实体，通过DNSLOG回显来判断此处是否存在XXE,然后在进行下一步的利用。</p>
+<p><img src="/img/image-20220807200101166.png" srcset="/img/loading.gif" lazyload alt="image-20220807200101166"></p>
+<p><img src="/img/image-20220807200041079.png" srcset="/img/loading.gif" lazyload alt="image-20220807200041079"></p>
+<h2 id="3-XXE相关函数"><a href="#3-XXE相关函数" class="headerlink" title="3.XXE相关函数"></a>3.XXE相关函数</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs wiki">建议大家做实验的时候使用PHP5.2、5.3、5.4，因为在这些版本中libxml的版本还是2.7.X，而在libxml版本**大于2.9.1**的时候PHP默认已经不解析外部实体了，如果是高版本PHP需要手动添加`libxml_disable_entity_loader(false)`开启。<br></code></pre></td></tr></table></figure>
+
+<p>在PHP代码审计中常见的能够解析XML函数如下</p>
+<h3 id="simplexml-load-string"><a href="#simplexml-load-string" class="headerlink" title="simplexml_load_string()"></a>simplexml_load_string()</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php">定义和用法:<br>该函数转换形式良好的XML字符串为 SimpleXMLElement 对象。<br><br>语法：<br><span class="hljs-title function_ invoke__">simplexml_load_string</span>(data,classname,options,ns,is_prefix);<br>	data 	必需。规定形式良好的 XML 字符串。<br>	classname 	可选。规定新对象的 <span class="hljs-class"><span class="hljs-keyword">class</span>。</span><br><span class="hljs-class">    <span class="hljs-title">options</span> 	可选。规定附加的 <span class="hljs-title">Libxml</span> 参数。通过指定选项为 1 或 0（<span class="hljs-title">TRUE</span> 或 <span class="hljs-title">FALSE</span>，例如 <span class="hljs-title">LIBXML_NOBLANKS</span>(1)）进行设					置。</span><br><span class="hljs-class">    <span class="hljs-title">ns</span> 	可选。规定命名空间前缀或 <span class="hljs-title">URI</span>。</span><br><span class="hljs-class">	<span class="hljs-title">is_prefix</span> 	可选。规定一个布尔值。如果 <span class="hljs-title">ns</span> 是前缀则为 <span class="hljs-title">TRUE</span>，如果 <span class="hljs-title">ns</span> 是 <span class="hljs-title">URI</span> 则为 <span class="hljs-title">FALSE</span>。默认是 <span class="hljs-title">FALSE</span>。</span><br><span class="hljs-class"></span><br><span class="hljs-class">返回值：</span><br><span class="hljs-class">如果成功则返回<span class="hljs-title">SimpleXMLElement</span>对象，如果失败则返回<span class="hljs-title">FALSE</span>。</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>代码示例：</strong></p>
+<p>输出XML字符串中每个节点的元素名以及元素中的值</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$note</span>=&lt;&lt;&lt;XML    <span class="hljs-comment">// &lt;&lt;&lt;XX为PHP定界符格式，在其中的内容会被原样输出</span><br>&lt;note&gt;<br>&lt;to&gt;PHP&lt;/to&gt;<br>&lt;<span class="hljs-keyword">from</span>&gt;is best&lt;/<span class="hljs-keyword">from</span>&gt;<br>&lt;heading&gt;in the&lt;/heading&gt;<br>&lt;body&gt;world!&lt;/body&gt;<br>&lt;/note&gt;<br>XML;            <span class="hljs-comment">//定界符结尾</span><br> <br><span class="hljs-variable">$xml</span>=<span class="hljs-title function_ invoke__">simplexml_load_string</span>(<span class="hljs-variable">$note</span>);<br><span class="hljs-comment">//var_dump($XML);</span><br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$xml</span>-&gt;<span class="hljs-title function_ invoke__">getName</span>() . <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br> <br><span class="hljs-keyword">foreach</span>(<span class="hljs-variable">$xml</span>-&gt;<span class="hljs-title function_ invoke__">children</span>() <span class="hljs-keyword">as</span> <span class="hljs-variable">$key</span>=&gt;<span class="hljs-variable">$value</span>)<br>&#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$key</span> . <span class="hljs-string">&quot;: &quot;</span> . <span class="hljs-variable">$value</span> . <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/image-20220808135547000.png" srcset="/img/loading.gif" lazyload alt="image-20220808135547000"></p>
+<p>不仅可以引用内部实体，重要的是可以引用外部实体。</p>
+<p><strong>代码示例：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$note</span>=<span class="hljs-title function_ invoke__">file_get_contents</span>(<span class="hljs-string">&#x27;php://input&#x27;</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$note</span>;<br><span class="hljs-variable">$xml</span> = <span class="hljs-title function_ invoke__">simplexml_load_string</span>(<span class="hljs-variable">$note</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$xml</span>;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><code>php://input</code>个可以访问请求的原始数据的只读流。当请求方式是post，并且Content-Type不等于”multipart&#x2F;form-data”时，可以使用php:&#x2F;&#x2F;input来获取原始请求的数据。</p>
+<p>个人理解<code>php://input</code>类似于<code>$_POST</code>，只是当Content-Type为<code>multipart/form-data</code>时也就是上传文件时即使请求体中有数据php:&#x2F;&#x2F;input也不会进行读取。</p>
+<p><img src="/img/image-20220808170045646.png" srcset="/img/loading.gif" lazyload alt="image-20220808170045646"></p>
+<h3 id="simplexml-load-file"><a href="#simplexml-load-file" class="headerlink" title="simplexml_load_file()"></a>simplexml_load_file()</h3><p>该函数与<code>simplexml_load_string()</code> 函数的区别在于<code>simplexml_load_file()</code>函数传入的是xml文件而<code>simplexml_load_string() </code>传入的则是字符串。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php">定义和用法:<br>该函数转换指定的 XML 文件为 SimpleXMLElement 对象。<br><br>语法：<br><span class="hljs-title function_ invoke__">simplexml_load_file</span>(file,classname,options,ns,is_prefix);<br>	file 	必需。规定 XML 文件路径。<br>	classname 	可选。规定新对象的 <span class="hljs-class"><span class="hljs-keyword">class</span>。</span><br><span class="hljs-class">	<span class="hljs-title">options</span> 	可选。规定附加的 <span class="hljs-title">Libxml</span> 参数。通过指定选项为 1 或 0（<span class="hljs-title">TRUE</span> 或 <span class="hljs-title">FALSE</span>，例如 <span class="hljs-title">LIBXML_NOBLANKS</span>(1)）进行设		置。  </span><br><span class="hljs-class">	<span class="hljs-title">ns</span> 	可选。规定命名空间前缀或 <span class="hljs-title">URI</span>。</span><br><span class="hljs-class">	<span class="hljs-title">is_prefix</span> 	可选。规定一个布尔值。如果 <span class="hljs-title">ns</span> 是前缀则为 <span class="hljs-title">TRUE</span>，如果 <span class="hljs-title">ns</span> 是 <span class="hljs-title">URI</span> 则为 <span class="hljs-title">FALSE</span>。默认是 <span class="hljs-title">FALSE</span>。</span><br><span class="hljs-class"></span><br><span class="hljs-class">返回值： 	</span><br><span class="hljs-class">如果成功则返回 <span class="hljs-title">SimpleXMLElement</span> 对象，如果失败则返回 <span class="hljs-title">FALSE</span>。</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>代码示例：</strong></p>
+<p><code>note.xml</code></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;ISO-8859-1&quot;</span>?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">note</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">to</span>&gt;</span>PHP<span class="hljs-tag">&lt;/<span class="hljs-name">to</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">from</span>&gt;</span>is best<span class="hljs-tag">&lt;/<span class="hljs-name">from</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">heading</span>&gt;</span>in the<span class="hljs-tag">&lt;/<span class="hljs-name">heading</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>world!<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">note</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>输出XML字符串中每个节点的元素名以及元素中的值</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs php+HTML">&lt;?php<br><br>$xml=simplexml_load_file(&quot;note.xml&quot;);<br>//var_dump($XML);<br>echo $xml-&gt;getName() . &quot;&lt;br&gt;&quot;;<br><br>foreach($xml-&gt;children() as $key=&gt;$value)<br>&#123;<br>    echo $key . &quot;: &quot; . $value . &quot;&lt;br&gt;&quot;;<br>&#125;<br>?&gt;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/image-20220811174812578.png" srcset="/img/loading.gif" lazyload alt="image-20220811174812578"></p>
+<h3 id="simplexml-import-dom"><a href="#simplexml-import-dom" class="headerlink" title="simplexml_import_dom()"></a>simplexml_import_dom()</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php">定义和用法:<br>该函数从 DOM 节点返回 SimpleXMLElement 对象。<br><br>语法：<br><span class="hljs-title function_ invoke__">simplexml_import_dom</span>(node,classname);<br>	node 	必需。规定 DOM 元素节点。<br>	classname 	可选。规定新对象的 <span class="hljs-class"><span class="hljs-keyword">class</span>。</span><br><span class="hljs-class"></span><br><span class="hljs-class">返回值：</span><br><span class="hljs-class">如果成功则返回 <span class="hljs-title">SimpleXMLElement</span> 对象，如果失败则返回 <span class="hljs-title">FALSE</span>。</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>代码示例：</strong></p>
+<p>首先需要调用<code>DOMDocument</code>类下的<code>loadXML</code>方法来解析指定的 XML 文本串，然后在调用<code>simplexml_import_dom()</code>函数将XML文本串转换为<code>SimpleXMLElement </code>对象。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br>    <span class="hljs-variable">$xmlfile</span> = <span class="hljs-title function_ invoke__">file_get_contents</span>(<span class="hljs-string">&#x27;php://input&#x27;</span>);<br><br>    <span class="hljs-variable">$dom</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">DOMDocument</span>();			<br><br>    <span class="hljs-variable">$dom</span>-&gt;<span class="hljs-title function_ invoke__">loadXML</span>(<span class="hljs-variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD); <br><br>    <span class="hljs-variable">$xml</span> = <span class="hljs-title function_ invoke__">simplexml_import_dom</span>(<span class="hljs-variable">$dom</span>);<br><br>    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$xml</span>;<br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>解析外部实体，并通过file协议读取文件。</p>
+<p><img src="/img/image-20220812101303799.png" srcset="/img/loading.gif" lazyload alt="image-20220812101303799"></p>
+<h3 id="asXML"><a href="#asXML" class="headerlink" title="asXML()"></a>asXML()</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs php">定义和用法:<br>该函数格式化 XML（版本 <span class="hljs-number">1.0</span>）中的 SimpleXML 对象的数据。<br><br>语法：<br><span class="hljs-title function_ invoke__">asXML</span>(filename);<br>	filename 	可选。规定需要写入数据的文件的名称。<br><br>返回值： 	<br>如果成功则返回一个字符串，如果失败则返回 <span class="hljs-literal">FALSE</span>。如果指定了 filename 参数，成功则返回 <span class="hljs-literal">TRUE</span>，失败则返回 <span class="hljs-literal">FALSE</span>。<br></code></pre></td></tr></table></figure>
+
+<p>实例化一个<code>SimpleXMLElement</code>类，然后调用类中的方法<code>asXML()</code>将XML文本串转换为字符串。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$note</span>=<span class="hljs-string">&lt;&lt;&lt;XML</span><br><span class="hljs-string">&lt;note&gt;</span><br><span class="hljs-string">&lt;to&gt;PHP&lt;/to&gt;</span><br><span class="hljs-string">&lt;from&gt;is best&lt;/from&gt;</span><br><span class="hljs-string">&lt;heading&gt;in the&lt;/heading&gt;</span><br><span class="hljs-string">&lt;body&gt;world!&lt;/body&gt;</span><br><span class="hljs-string">&lt;/note&gt;</span><br><span class="hljs-string">XML</span>;<br><br><span class="hljs-variable">$xml</span>=<span class="hljs-keyword">new</span> <span class="hljs-title class_">SimpleXMLElement</span>(<span class="hljs-variable">$note</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$xml</span>-&gt;<span class="hljs-title function_ invoke__">asXML</span>();<br><span class="hljs-meta">?&gt;</span> <br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/image-20220812110637007.png" srcset="/img/loading.gif" lazyload alt="image-20220812110637007"></p>
+<h2 id="5-XXE漏洞"><a href="#5-XXE漏洞" class="headerlink" title="5.XXE漏洞"></a>5.XXE漏洞</h2><p>此次xxe漏洞就以<code>XXE-Lab</code>靶场为例，只需要将源码放入phpstudy的www目录下访问即可，靶场源码会随文档一起打包下发。</p>
+<p>安装完成界面如下</p>
+<p><img src="/img/image-20220812144238980.png" srcset="/img/loading.gif" lazyload alt="image-20220812144238980"></p>
+<p>burp抓包发现，该登录方法通过xml格式来传递登录需要的数据</p>
+<p><img src="/img/image-20220812145948579.png" srcset="/img/loading.gif" lazyload alt="image-20220812145948579"></p>
+<p>查看前端代码，在代码102行，自定义函数<code>doLogin()</code>，接收两个参数并将参数以xml形式传递给<code>doLogin.php</code>文件进行处理，在代码118行，通过填入的<code>username</code>和<code>password</code>值，通过后端返回的状态码在前端展示提示信息。</p>
+<p><img src="/img/image-20220812145849320.png" srcset="/img/loading.gif" lazyload alt="image-20220812145849320"></p>
+<p>在代码第12行，使用<code>php://input</code>接收POST数据，通过<code>loadXML()</code>方法来解析我们传入的XML内容，最后通过<code>simplexml_import_dom()</code>将内容转换为<code>SimpleXMLElement </code>对象，上面传入到解析XML的过程中没有任何过滤已经造成了xxe，且代码32行会将我们输入的内容进行输出，从而我们可以判定此处xxe存在回显。</p>
+<p><img src="/img/image-20220812150906447.png" srcset="/img/loading.gif" lazyload alt="image-20220812150906447"></p>
+<p><img src="/img/image-20220812161239861.png" srcset="/img/loading.gif" lazyload alt="image-20220812161239861"></p>
+<h2 id="6-XXE代码审计总结"><a href="#6-XXE代码审计总结" class="headerlink" title="6.XXE代码审计总结"></a>6.XXE代码审计总结</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs wiki">对于XXE来说我们首先要了解XML的语法以及基础结构，这样我们在发现XXE的时候可以轻松的构造可利用的payload，对于危险函数我们要了解各函数的用法以及他们之前的区别，这样对于大家在后续审计项目的时候会有很大的帮助。<br></code></pre></td></tr></table></figure>
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%9F%BA%E7%A1%80/">#PHP代码审计基础</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>PHP代码审计之WEB安全系列基础文章（十二）之XXE篇</div>
+      <div>http://example.com/2022/10/10/PHP代码审计之WEB安全系列基础文章（十二）之XXE篇/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Power7089</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月10日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10/10/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8BWEB%E5%AE%89%E5%85%A8%E7%B3%BB%E5%88%97%E5%9F%BA%E7%A1%80%E6%96%87%E7%AB%A0%EF%BC%88%E5%8D%81%E4%B8%89%EF%BC%89%E4%B9%8BSSTI%E7%AF%87/" title="PHP代码审计之WEB安全系列基础文章（十三）之SSTI篇">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">PHP代码审计之WEB安全系列基础文章（十三）之SSTI篇</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/10/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8BWEB%E5%AE%89%E5%85%A8%E7%B3%BB%E5%88%97%E5%9F%BA%E7%A1%80%E6%96%87%E7%AB%A0%EF%BC%88%E5%8D%81%E4%B8%80%EF%BC%89%E4%B9%8B%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%AF%87/" title="PHP代码审计之WEB安全系列基础文章（十一）之反序列化篇">
+                        <span class="hidden-mobile">PHP代码审计之WEB安全系列基础文章（十一）之反序列化篇</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       欢迎知识星球搜索【炼石计划@Java代码审计】【炼石计划@PHP代码审计】【炼石计划@渗透攻防宇宙】 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

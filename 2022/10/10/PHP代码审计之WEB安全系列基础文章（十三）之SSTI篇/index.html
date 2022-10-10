@@ -1,0 +1,745 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Power7089">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  今天为大家带来PHP代码审计基础系列文章第十三篇之SSTI篇。 这是【炼石计划@PHP代码审计】知识星球第二阶段的原">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP代码审计之WEB安全系列基础文章（十三）之SSTI篇">
+<meta property="og:url" content="http://example.com/2022/10/10/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8BWEB%E5%AE%89%E5%85%A8%E7%B3%BB%E5%88%97%E5%9F%BA%E7%A1%80%E6%96%87%E7%AB%A0%EF%BC%88%E5%8D%81%E4%B8%89%EF%BC%89%E4%B9%8BSSTI%E7%AF%87/index.html">
+<meta property="og:site_name" content="Power7089">
+<meta property="og:description" content="【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  今天为大家带来PHP代码审计基础系列文章第十三篇之SSTI篇。 这是【炼石计划@PHP代码审计】知识星球第二阶段的原">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif">
+<meta property="og:image" content="http://example.com/img/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%A3%E4%BC%A0%E6%B5%B7%E6%8A%A5.png">
+<meta property="og:image" content="http://example.com/img/image-20220831160140363.png">
+<meta property="og:image" content="http://example.com/img/image-20220831160413977.png">
+<meta property="og:image" content="http://example.com/img/image-20220831145255803.png">
+<meta property="og:image" content="http://example.com/img/image-20220831162331031.png">
+<meta property="og:image" content="http://example.com/img/image-20220831164011992.png">
+<meta property="og:image" content="http://example.com/img/image-20220831164257740.png">
+<meta property="og:image" content="http://example.com/img/image-20220831163649132.png">
+<meta property="og:image" content="http://example.com/img/image-20220831211127926.png">
+<meta property="og:image" content="http://example.com/img/image-20220831213616544.png">
+<meta property="og:image" content="http://example.com/img/image-20220831215831723.png">
+<meta property="og:image" content="http://example.com/img/image-20220831220435680.png">
+<meta property="og:image" content="http://example.com/img/image-20220831234541547.png">
+<meta property="og:image" content="http://example.com/img/image-20220831230902465.png">
+<meta property="og:image" content="http://example.com/img/image-20220831231051546.png">
+<meta property="og:image" content="http://example.com/img/image-20220831231134140.png">
+<meta property="og:image" content="http://example.com/img/image-20220831231353341.png">
+<meta property="og:image" content="http://example.com/img/image-20220831231652608.png">
+<meta property="og:image" content="http://example.com/img/image-20220831232539092.png">
+<meta property="og:image" content="http://example.com/img/image-20220831232901648.png">
+<meta property="article:published_time" content="2022-10-10T03:29:13.000Z">
+<meta property="article:modified_time" content="2022-10-10T03:30:49.607Z">
+<meta property="article:author" content="Power7089">
+<meta property="article:tag" content="PHP代码审计基础">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>PHP代码审计之WEB安全系列基础文章（十三）之SSTI篇 - Power7089</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":88,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"yxPaB1iPDz9V47o8ASUol6fh-gzGzoHsz","app_key":"PyweBFOvttknCdKW7DspREFV","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Power7089的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="PHP代码审计之WEB安全系列基础文章（十三）之SSTI篇"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-10 11:29" pubdate>
+          2022年10月10日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          46 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">PHP代码审计之WEB安全系列基础文章（十三）之SSTI篇</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>【如需转载，请详细表明来源，请勿设置原创】</p>
+<p>嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。</p>
+<p>欢迎大家扫描下方二维码关注 <strong>“闪石星曜CyberSecurity”</strong> 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。</p>
+<p><img src="/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif" srcset="/img/loading.gif" lazyload alt="公众号"></p>
+<p>今天为大家带来PHP代码审计基础系列文章<strong>第十三篇之SSTI篇</strong>。</p>
+<p><em>这是【炼石计划@PHP代码审计】知识星球第二阶段的原创基础系列文章，拿出部分课程分享给零基础的朋友学习。本系列原创基础文章涵盖了PHP代码审计中常见的十余种WEB漏洞，是匹夫老师精心的创作，欢迎关注我的公众号跟着一起学习。</em></p>
+<p><em>【炼石计划@PHP代码审计】是一个系统化从入门到提升学习PHP代码审计的成长型知识星球。这里不仅注重夯实基础，更加专注实战进阶。强烈推荐加入我们，一起来实战提升PHP代码审计。</em></p>
+<p><img src="/img/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%A3%E4%BC%A0%E6%B5%B7%E6%8A%A5.png" srcset="/img/loading.gif" lazyload alt="公众号"></p>
+<h1 id="PHP代码审计之SSTI模板注入"><a href="#PHP代码审计之SSTI模板注入" class="headerlink" title="PHP代码审计之SSTI模板注入"></a>PHP代码审计之SSTI模板注入</h1><h2 id="1-SSTI模板注入原理"><a href="#1-SSTI模板注入原理" class="headerlink" title="1.SSTI模板注入原理"></a>1.SSTI模板注入原理</h2><p>SSTI(Server-Side Template Injection)服务器模板注入也是注入的一种类型，它的原理与SQL注入有些类似，SQL注入是从前端获取用户输入，然后通过后端代码带到数据库中进行查询来执行我们想要执行的SQL语句。SSTI也是一样的，从前端获取参数值，然后在后端进行<strong>渲染处理</strong>时进行语句拼接执行。</p>
+<p>由于如今大部分框架都是基于MVC模式进行开发的，我们的输入通过 V(view) 接收，交给 C(controller) ，然后由 C 调用M(model) 或者其他的 C 进行处理，最后再返回给 V ，这样就最终显示在我们的面前了，那么这里的 <strong>V 中就大量的用到了一种叫做模板的技术</strong>，而凡是使用模板的地方都有可能存在模板注入。</p>
+<h3 id="1-1-PHP常见模板引擎"><a href="#1-1-PHP常见模板引擎" class="headerlink" title="1.1 PHP常见模板引擎"></a>1.1 PHP常见模板引擎</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs wiki">Smarty<br><br>Smarty算是一种很老的PHP模板引擎了，非常的经典，使用的比较广泛。<br><br>Twig<br><br>Twig是来自于Symfony的模板引擎，它非常易于安装和使用。它的操作有点像Mustache和liquid。<br><br>Blade<br><br>Blade 是 Laravel 提供的一个既简单又强大的模板引擎。<br>和其他流行的 PHP 模板引擎不一样，Blade 并不限制你在视图中使用原生PHP代码。所有Blade视图文件都将被编译成原生的PHP代码并缓存起来，除非它被修改，否则不会重新编译，这就意味着 Blade基本上不会给你的应用增加任何额外负担。<br></code></pre></td></tr></table></figure>
+
+<h3 id="1-2-模板引擎payload格式"><a href="#1-2-模板引擎payload格式" class="headerlink" title="1.2 模板引擎payload格式"></a>1.2 模板引擎payload格式</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs wiki">Smarty<br>&#123;php&#125;echo `id`;&#123;/php&#125;   //在smarty 3.X中废弃<br>&#123;&#125;<br>&#123;literal&#125;				//PHP5中适用<br>&#123;if&#125;&#123;/if&#125;<br><br>Twig<br>&#123;&#123;2*3&#125;&#125;<br><br>Blade<br>&#123;&#123;&#125;&#125;<br>&#123;!! !!&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="2-SSTI相关函数"><a href="#2-SSTI相关函数" class="headerlink" title="2.SSTI相关函数"></a>2.SSTI相关函数</h2><p>在PHP中如果使用了如上所述的模板引擎，在这些模板引擎之中分别利用不同的模板函数进行模板的渲染，如果函数中存在可控参数，那么很大概率会存在SSTI模板注入，下面我们通过介绍上述不同的模板引擎来引出引擎中的SSTI相关函数。</p>
+<h3 id="Twig"><a href="#Twig" class="headerlink" title="Twig"></a>Twig</h3><p>Twig是一款灵活、快速、安全的PHP模板引擎。</p>
+<p>如果你接触过其他基于文本的模板语言，比如 Smarty、Django、或者Jinja，你便能轻松掌握Twig。它坚持PHP的原则，并为模板环境添加了有用的功能，使其同时保持对设计师和开发者友好。</p>
+<p>Twig由一个灵活的词法分析器和解析器驱动。这使得开发者可以自定义标签和过滤器，并创建自己的DSL。</p>
+<p>Twig已被用于许多开源项目，比如Symfony, Drupal8, eZPublish,phpBB, Piwik, OroCRM；并且许多框架也支持它，例如Slim, Yii, Laravel, Codeigniter and Kohana。</p>
+<p><strong>安装</strong></p>
+<p>将源码(<a target="_blank" rel="noopener" href="https://github.com/twigphp/Twig/tree/v1.16.1)%E6%94%BE%E7%BD%AEphpstudy%E4%B8%ADwww%E7%9B%AE%E5%BD%95%E4%B8%8B%EF%BC%8C%E5%B9%B6%E5%9C%A8phpstudy%E4%B8%8B%E5%88%9B%E5%BB%BA%E7%BD%91%E7%AB%99%E8%AE%A9%E5%85%B6%E8%A7%A3%E6%9E%90%E3%80%82">https://github.com/twigphp/Twig/tree/v1.16.1)放置phpstudy中www目录下，并在phpstudy下创建网站让其解析。</a></p>
+<p><img src="/img/image-20220831160140363.png" srcset="/img/loading.gif" lazyload alt="image-20220831160140363"></p>
+<p><img src="/img/image-20220831160413977.png" srcset="/img/loading.gif" lazyload alt="image-20220831160413977"></p>
+<p><strong>代码示例：</strong></p>
+<p>在根目录下创建test.php代码用于测试代码是否正常运行。</p>
+<p>Twig 首先使用一个加载器 <code>Twig_Loader_Array</code> 来定位模板，然后使用一个环境变量 <code>Twig_Environment</code> 来存储配置信息。其中， <strong>render()</strong> 方法通过其第一个参数载入模板，并通过第二个参数中的变量来渲染模板。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">require_once</span> <span class="hljs-string">&#x27;lib/Twig/Autoloader.php&#x27;</span>;<br><span class="hljs-title class_">Twig_Autoloader</span>::<span class="hljs-title function_ invoke__">register</span>();<br><br><span class="hljs-variable">$loader</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Twig_Loader_Array</span>(<span class="hljs-keyword">array</span>(<br><br>    <span class="hljs-string">&#x27;index&#x27;</span> =&gt; <span class="hljs-string">&#x27;Hello &#123;&#123; name &#125;&#125;!&#x27;</span>,<br><br>));<br><br><span class="hljs-variable">$twig</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Twig_Environment</span>(<span class="hljs-variable">$loader</span>);<br><br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$twig</span>-&gt;<span class="hljs-title function_ invoke__">render</span>(<span class="hljs-string">&#x27;index&#x27;</span>,<span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;name&#x27;</span>=&gt;<span class="hljs-string">&#x27;World&#x27;</span>));<br></code></pre></td></tr></table></figure>
+
+<p>模板加载成功</p>
+<p><img src="/img/image-20220831145255803.png" srcset="/img/loading.gif" lazyload alt="image-20220831145255803"></p>
+<p>Twig 模板注入也是发生在直接将用户输入作为模板，比如下面的代码：</p>
+<p>这里我们需要渲染的内容用户可控，所以存在以下利用方式。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-keyword">include</span> <span class="hljs-string">&#x27;lib/Twig/Autoloader.php&#x27;</span>;<br><span class="hljs-title class_">Twig_Autoloader</span>::<span class="hljs-title function_ invoke__">register</span>();<br><br><span class="hljs-variable">$loader</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Twig_Loader_String</span>();<br><br><span class="hljs-variable">$twig</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Twig_Environment</span>(<span class="hljs-variable">$loader</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$twig</span>-&gt;<span class="hljs-title function_ invoke__">render</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;name&#x27;</span>]);<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>在Twig 1.X版本中有三个全局变量</p>
+<p><img src="/img/image-20220831162331031.png" srcset="/img/loading.gif" lazyload alt="image-20220831162331031"></p>
+<p>这里主要就是利用 <code>_self</code> 变量，它会返回当前 <code>\Twig\Template</code> 实例，并提供了指向 <code>Twig_Environment</code> 的 <code>env</code> 属性，这样我们就可以继续调用 <code>Twig_Environment</code> 中的其他方法，从而进行 SSTI。</p>
+<p><code>getFilter</code> 里发现了危险函数 <code>call_user_func</code>。通过传递参数到该函数中，我们可以调用任意 PHP 函数。</p>
+<p><img src="/img/image-20220831164011992.png" srcset="/img/loading.gif" lazyload alt="image-20220831164011992"></p>
+<p>通过调用registerUndefinedFilterCallback()函数调用回调函数传入call_user_func()来执行命令</p>
+<p><img src="/img/image-20220831164257740.png" srcset="/img/loading.gif" lazyload alt="image-20220831164257740"></p>
+<p>paylaod如下:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">&#123;&#123;_self.env.<span class="hljs-title function_ invoke__">registerUndefinedFilterCallback</span>(<span class="hljs-string">&quot;exec&quot;</span>)&#125;&#125;&#123;&#123;_self.env.<span class="hljs-title function_ invoke__">getFilter</span>(<span class="hljs-string">&quot;calc&quot;</span>)&#125;&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/image-20220831163649132.png" srcset="/img/loading.gif" lazyload alt="image-20220831163649132"></p>
+<p>Twig 2.X、3.X中也存在相应的模板注入问题，感兴趣的同学们可以学习一下先知社区的这篇文章：</p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/10056#toc-14">https://xz.aliyun.com/t/10056#toc-14</a></p>
+<h3 id="Smarty"><a href="#Smarty" class="headerlink" title="Smarty"></a>Smarty</h3><p>Smarty 是 PHP 的模板引擎，有助于将表示 (HTML&#x2F;CSS) 与应用程序逻辑分离。</p>
+<p>在 3.X&lt;<strong>3.1.42</strong> 和4.X&lt; <strong>4.0.2</strong> 版本之前，攻击者可以通过制作恶意数学字符串来运行任意 PHP 代码。</p>
+<p>如果数学字符串作为用户提供的数据传递给数学函数，则外部用户可以通过制作恶意数学字符串来运行任意 PHP 代码。</p>
+<p><strong>安装</strong></p>
+<p>将源码(<a target="_blank" rel="noopener" href="https://github.com/twigphp/Twig/tree/v1.16.1)%E6%94%BE%E7%BD%AEphpstudy%E4%B8%ADwww%E7%9B%AE%E5%BD%95%E4%B8%8B%EF%BC%8C%E5%B9%B6%E5%9C%A8phpstudy%E4%B8%8B%E5%88%9B%E5%BB%BA%E7%BD%91%E7%AB%99%E8%AE%A9%E5%85%B6%E8%A7%A3%E6%9E%90%EF%BC%8C%E4%B8%8E%E4%B8%8A%E9%9D%A2Twig%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E7%B1%BB%E4%BC%BC%E3%80%82">https://github.com/twigphp/Twig/tree/v1.16.1)放置phpstudy中www目录下，并在phpstudy下创建网站让其解析，与上面Twig部署方式类似。</a></p>
+<p>我们可以直接使用其demo中的代码进行漏洞演示，如果大家想创建自己的demo，必须在自己的文件夹下创建cache,config,templates,templates_c四个文件夹。</p>
+<p><img src="/img/image-20220831211127926.png" srcset="/img/loading.gif" lazyload alt="image-20220831211127926"></p>
+<p>手动创建demo1文件夹，文件夹下相应创建如下目录以及文件</p>
+<p><img src="/img/image-20220831213616544.png" srcset="/img/loading.gif" lazyload alt="image-20220831213616544"></p>
+<p>我们来看一下smarty.inc.php这个文件，这是一个公共文件配置代码，我们打开看看具体内容。</p>
+<p>这里的目录路径要相对于自己的目录进行调整。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs text">&lt;!doctype html&gt;<br>&lt;html&gt;<br>&lt;head&gt;<br>    &lt;meta charset=&quot;utf-8&quot;&gt;<br>    &lt;title&gt;common&lt;/title&gt;<br>&lt;/head&gt;<br><br>&lt;body&gt;<br>&lt;?php<br>    include_once &quot;../libs/Smarty.class.php&quot;;  //第一步要包含Smarty类文件<br>    $smarty = new Smarty();  //实例化Smarty类<br><br><br>    //文件夹名字可自定义<br>    $smarty-&gt;joined_config_dir=&quot;./config&quot;;     //设置配置目录（非必选）<br>    $smarty-&gt;cache_dir=&quot;./caches&quot;;          //设置缓存目录<br>    $smarty-&gt;caching=true;                  //打开缓存<br>    $smarty-&gt;cache_lifetime=1;         //设置缓存时间<br>    $smarty-&gt;joined_template_dir=&quot;./templates&quot;;     //设置模板目录<br>    $smarty-&gt;compile_dir = &quot;./templates_c&quot;;         //设置编译目录<br>    $smarty-&gt;cache_dir = &quot;./smarty_cache&quot;;<br><br>    ?&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+
+<p>网站主页index.php中代码如下：</p>
+<p>$smarty-&gt;assign(‘value’,’Hello World’);的意思为用Hello World替代模板文件index.tpl里面的value字段的位置，也就是一个替换操作，具体等会看index.tpl文件就明白。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs php">&lt;!doctype html&gt;<br>&lt;html&gt;<br>&lt;head&gt;<br>    &lt;meta charset=<span class="hljs-string">&quot;utf-8&quot;</span>&gt;<br>    &lt;title&gt;index&lt;/title&gt;<br>&lt;/head&gt;<br><br>&lt;body&gt;<br><span class="hljs-meta">&lt;?php</span><br>    <span class="hljs-keyword">include</span> <span class="hljs-string">&quot;./smarty.inc.php&quot;</span>;    <span class="hljs-comment">//包含smarty.inc.php配置文件</span><br>    <span class="hljs-variable">$smarty</span>-&gt;<span class="hljs-title function_ invoke__">assign</span>(<span class="hljs-string">&#x27;value&#x27;</span>,<span class="hljs-string">&#x27;Hello World&#x27;</span>);   <span class="hljs-comment">//将变量value赋值为hello world</span><br><br>    <span class="hljs-variable">$smarty</span>-&gt;<span class="hljs-title function_ invoke__">display</span>(<span class="hljs-string">&#x27;index.tpl&#x27;</span>);  <span class="hljs-comment">//这里的index.tpl文件名要与index.php文件名相对应</span><br><span class="hljs-meta">?&gt;</span><br><br>&lt;/body&gt;<br><br>&lt;/html&gt;<br><br></code></pre></td></tr></table></figure>
+
+<p>templates文件夹下创建index.tpl文件</p>
+<p><img src="/img/image-20220831215831723.png" srcset="/img/loading.gif" lazyload alt="image-20220831215831723"></p>
+<p>代码如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!doctype <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;utf-8&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>hello<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br> Hi~&#123;$value&#125;!<br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>将value替换为我们上述的Hello World。</p>
+<p><img src="/img/image-20220831220435680.png" srcset="/img/loading.gif" lazyload alt="image-20220831220435680"></p>
+<p>如果这里**displa()**函数中我们的内容可控就会造成模板注入。</p>
+<p><img src="/img/image-20220831234541547.png" srcset="/img/loading.gif" lazyload alt="image-20220831234541547"></p>
+<p>这里name传入XSS payload</p>
+<p><img src="/img/image-20220831230902465.png" srcset="/img/loading.gif" lazyload alt="image-20220831230902465"></p>
+<h2 id="3-SSTI漏洞利用"><a href="#3-SSTI漏洞利用" class="headerlink" title="3.SSTI漏洞利用"></a>3.SSTI漏洞利用</h2><p>这里我们用一道CTF靶场来进行SSTI模板注入漏洞的演示：</p>
+<p>地址：<a target="_blank" rel="noopener" href="https://buuoj.cn/challenges%EF%BC%88%E6%B3%A8%E5%86%8C%E7%99%BB%E5%BD%95%E5%8D%B3%E5%8F%AF%EF%BC%89">https://buuoj.cn/challenges（注册登录即可）</a></p>
+<p><img src="/img/image-20220831231051546.png" srcset="/img/loading.gif" lazyload alt="image-20220831231051546"></p>
+<p>该题使用了Smarty模板，那么大概率和Smarty模板注入有关了。</p>
+<p><img src="/img/image-20220831231134140.png" srcset="/img/loading.gif" lazyload alt="image-20220831231134140"></p>
+<p>在页面的右上角显示了IP地址，猜测可能是通过Smarty模板获取IP地址并通过渲染显示在前端，我们可以尝试该处获取IP地址处是否可控。</p>
+<p><img src="/img/image-20220831231353341.png" srcset="/img/loading.gif" lazyload alt="image-20220831231353341"></p>
+<p>很明显这里的IP地址是从XFF获取，且直接通过display()进行渲染输入。</p>
+<p><img src="/img/image-20220831231652608.png" srcset="/img/loading.gif" lazyload alt="image-20220831231652608"></p>
+<p>可通过**{$smarty.version}**探测smarty版本为3.1.30</p>
+<p><img src="/img/image-20220831232539092.png" srcset="/img/loading.gif" lazyload alt="image-20220831232539092"></p>
+<p>这里我们可以通过{if  <code>php代码</code>}{&#x2F;if}的形式在{if}标签中执行任意PHP代码。</p>
+<p><img src="/img/image-20220831232901648.png" srcset="/img/loading.gif" lazyload alt="image-20220831232901648"></p>
+<h2 id="4-SSTI模板注入代码审计总结"><a href="#4-SSTI模板注入代码审计总结" class="headerlink" title="4.SSTI模板注入代码审计总结"></a>4.SSTI模板注入代码审计总结</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs wiki">在PHP的中很多地方都使用到了模板去渲染文件，SSTI在PHP中不仅应用在上述所说的一些模板引擎中，在很多例如ThinkPHP、CMS中的一些自定义模板引擎中都可能存在SSTI注入。在代码审计中要多去关注一些视图模板的功能点，在这些功能点处在去观察渲染时的参数是否可控。如果遇到上述引擎模板要重点去查看对应模板的利用方式从而进行针对性的利用。<br></code></pre></td></tr></table></figure>
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%9F%BA%E7%A1%80/">#PHP代码审计基础</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>PHP代码审计之WEB安全系列基础文章（十三）之SSTI篇</div>
+      <div>http://example.com/2022/10/10/PHP代码审计之WEB安全系列基础文章（十三）之SSTI篇/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Power7089</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月10日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/10/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8BWEB%E5%AE%89%E5%85%A8%E7%B3%BB%E5%88%97%E5%9F%BA%E7%A1%80%E6%96%87%E7%AB%A0%EF%BC%88%E5%8D%81%E4%BA%8C%EF%BC%89%E4%B9%8BXXE%E7%AF%87/" title="PHP代码审计之WEB安全系列基础文章（十二）之XXE篇">
+                        <span class="hidden-mobile">PHP代码审计之WEB安全系列基础文章（十二）之XXE篇</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       欢迎知识星球搜索【炼石计划@Java代码审计】【炼石计划@PHP代码审计】【炼石计划@渗透攻防宇宙】 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

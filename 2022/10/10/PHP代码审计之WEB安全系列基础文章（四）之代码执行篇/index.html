@@ -16,12 +16,12 @@
   <meta name="author" content="Power7089">
   <meta name="keywords" content="">
   
-    <meta name="description" content="【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  今天为大家带来PHP代码审计基础系列文章第一篇之代码执行篇。 这是【炼石计划@PHP代码审计】知识星球第二阶段的原创">
+    <meta name="description" content="【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  今天为大家带来PHP代码审计基础系列文章第四篇之代码执行篇。 这是【炼石计划@PHP代码审计】知识星球第二阶段的原创">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP代码审计之WEB安全系列基础文章（四）之代码执行篇">
 <meta property="og:url" content="http://example.com/2022/10/10/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8BWEB%E5%AE%89%E5%85%A8%E7%B3%BB%E5%88%97%E5%9F%BA%E7%A1%80%E6%96%87%E7%AB%A0%EF%BC%88%E5%9B%9B%EF%BC%89%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E7%AF%87/index.html">
 <meta property="og:site_name" content="Power7089">
-<meta property="og:description" content="【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  今天为大家带来PHP代码审计基础系列文章第一篇之代码执行篇。 这是【炼石计划@PHP代码审计】知识星球第二阶段的原创">
+<meta property="og:description" content="【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  今天为大家带来PHP代码审计基础系列文章第四篇之代码执行篇。 这是【炼石计划@PHP代码审计】知识星球第二阶段的原创">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif">
 <meta property="og:image" content="http://example.com/img/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%A3%E4%BC%A0%E6%B5%B7%E6%8A%A5.png">
@@ -51,7 +51,7 @@
 <meta property="og:image" content="http://example.com/img/image-20220617150025694.png">
 <meta property="og:image" content="http://example.com/img/image-20220617150550762.png">
 <meta property="article:published_time" content="2022-10-10T02:58:22.000Z">
-<meta property="article:modified_time" content="2022-10-10T03:13:14.639Z">
+<meta property="article:modified_time" content="2022-10-10T03:16:08.599Z">
 <meta property="article:author" content="Power7089">
 <meta property="article:tag" content="PHP代码审计">
 <meta name="twitter:card" content="summary_large_image">
@@ -324,7 +324,7 @@
 <p>嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。</p>
 <p>欢迎大家扫描下方二维码关注 <strong>“闪石星曜CyberSecurity”</strong> 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。</p>
 <p><img src="/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif" srcset="/img/loading.gif" lazyload alt="公众号"></p>
-<p>今天为大家带来PHP代码审计基础系列文章<strong>第一篇之代码执行篇</strong>。</p>
+<p>今天为大家带来PHP代码审计基础系列文章<strong>第四篇之代码执行篇</strong>。</p>
 <p><em>这是【炼石计划@PHP代码审计】知识星球第二阶段的原创基础系列文章，拿出部分课程分享给零基础的朋友学习。本系列原创基础文章涵盖了PHP代码审计中常见的十余种WEB漏洞，是匹夫老师精心的创作，欢迎关注我的公众号跟着一起学习。</em></p>
 <p><em>【炼石计划@PHP代码审计】是一个系统化从入门到提升学习PHP代码审计的成长型知识星球。这里不仅注重夯实基础，更加专注实战进阶。强烈推荐加入我们，一起来实战提升PHP代码审计。</em></p>
 <p><img src="/img/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%A3%E4%BC%A0%E6%B5%B7%E6%8A%A5.png" srcset="/img/loading.gif" lazyload alt="公众号"></p>
