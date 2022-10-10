@@ -1,0 +1,738 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Power7089">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  今天为大家带来PHP代码审计基础系列文章第一篇之SQL注入篇。 这是【炼石计划@PHP代码审计】知识星球第二阶段的原">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP代码审计之WEB安全系列基础文章（一）之SQL注入漏洞篇">
+<meta property="og:url" content="http://example.com/2022/10/10/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E4%B9%8BWEB%E5%AE%89%E5%85%A8%E7%B3%BB%E5%88%97%E5%9F%BA%E7%A1%80%E6%96%87%E7%AB%A0%EF%BC%88%E4%B8%80%EF%BC%89%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E7%AF%87/index.html">
+<meta property="og:site_name" content="Power7089">
+<meta property="og:description" content="【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  今天为大家带来PHP代码审计基础系列文章第一篇之SQL注入篇。 这是【炼石计划@PHP代码审计】知识星球第二阶段的原">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="c:/Users/powerful/Desktop/img/我的公众号二维码.gif">
+<meta property="og:image" content="http://example.com/img/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%A3%E4%BC%A0%E6%B5%B7%E6%8A%A5.png">
+<meta property="og:image" content="http://example.com/img/1653917141549.png">
+<meta property="og:image" content="http://example.com/img/1653980729657.png">
+<meta property="og:image" content="http://example.com/img/1653987719999.png">
+<meta property="og:image" content="http://example.com/img/1653987645959.png">
+<meta property="og:image" content="http://example.com/img/1653987813528.png">
+<meta property="og:image" content="http://example.com/img/1653980201683.png">
+<meta property="og:image" content="http://example.com/img/1653980529020.png">
+<meta property="og:image" content="http://example.com/img/image-20220813185757373.png">
+<meta property="og:image" content="http://example.com/img/1654010755088.png">
+<meta property="og:image" content="http://example.com/img/1654008588721.png">
+<meta property="og:image" content="http://example.com/img/1654006238804.png">
+<meta property="og:image" content="http://example.com/img/1654006369729.png">
+<meta property="og:image" content="http://example.com/img/1654006679963.png">
+<meta property="og:image" content="http://example.com/img/1654008765542.png">
+<meta property="og:image" content="http://example.com/img/1654009064538.png">
+<meta property="og:image" content="http://example.com/img/1654009453981.png">
+<meta property="og:image" content="http://example.com/img/1654088822877.png">
+<meta property="og:image" content="http://example.com/img/1654088905570.png">
+<meta property="og:image" content="http://example.com/img/1654089542962.png">
+<meta property="og:image" content="http://example.com/img/1654097242738.png">
+<meta property="og:image" content="http://example.com/img/1654097578086.png">
+<meta property="og:image" content="http://example.com/img/1654097719362.png">
+<meta property="og:image" content="http://example.com/img/1654097912570.png">
+<meta property="article:published_time" content="2022-10-10T02:46:26.000Z">
+<meta property="article:modified_time" content="2022-10-10T02:48:32.444Z">
+<meta property="article:author" content="Power7089">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="c:/Users/powerful/Desktop/img/我的公众号二维码.gif">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>PHP代码审计之WEB安全系列基础文章（一）之SQL注入漏洞篇 - Power7089</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":88,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"yxPaB1iPDz9V47o8ASUol6fh-gzGzoHsz","app_key":"PyweBFOvttknCdKW7DspREFV","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Power7089的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="PHP代码审计之WEB安全系列基础文章（一）之SQL注入漏洞篇"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-10 10:46" pubdate>
+          2022年10月10日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          60 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">PHP代码审计之WEB安全系列基础文章（一）之SQL注入漏洞篇</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>【如需转载，请详细表明来源，请勿设置原创】</p>
+<p>嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。</p>
+<p>欢迎大家扫描下方二维码关注 <strong>“闪石星曜CyberSecurity”</strong> 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。</p>
+<p><img src="C:\Users\powerful\Desktop\img\我的公众号二维码.gif" srcset="/img/loading.gif" lazyload alt="公众号"></p>
+<p>今天为大家带来PHP代码审计基础系列文章<strong>第一篇之SQL注入篇</strong>。</p>
+<p><em>这是【炼石计划@PHP代码审计】知识星球第二阶段的原创基础系列文章，拿出部分课程分享给零基础的朋友学习。本系列原创基础文章涵盖了PHP代码审计中常见的十余种WEB漏洞，是匹夫老师精心的创作，欢迎关注我的公众号跟着一起学习。</em></p>
+<p><em>【炼石计划@PHP代码审计】是一个系统化从入门到提升学习PHP代码审计的成长型知识星球。这里不仅注重夯实基础，更加专注实战进阶。强烈推荐加入我们，一起来实战提升PHP代码审计。</em></p>
+<p><img src="/img/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%A3%E4%BC%A0%E6%B5%B7%E6%8A%A5.png" srcset="/img/loading.gif" lazyload alt="公众号"></p>
+<h1 id="PHP代码审计之SQL注入"><a href="#PHP代码审计之SQL注入" class="headerlink" title="PHP代码审计之SQL注入"></a>PHP代码审计之SQL注入</h1><h2 id="1-SQL注入原理"><a href="#1-SQL注入原理" class="headerlink" title="1.SQL注入原理"></a>1.SQL注入原理</h2><p>​		SQL注入就是攻击者通过把恶意的SQL语句插入到Web表单的输入页面中，且插入的恶意语句会导致原有的SQL语句发生改变，从而达到攻击者的目的去让它执行一些危险的数据操作，进一步欺骗服务器去执行一些非本意的操作。简单来讲，<strong>所有可以涉及到数据库增删改查的系统功能点都有可能存在SQL注入漏洞</strong>。</p>
+<p>一个简单的攻击原理举例：<img src="/img/1653917141549.png" srcset="/img/loading.gif" lazyload alt="1653917141549"></p>
+<p>​		在SQL注入中，我们更应该关注的是业务逻辑，例如业务中可能设计到的增删改查操作，下面通过一个简单的代码小demo来进行SQL注入的演示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs php+HTML">&lt;!DOCTYPE html&gt;<br>&lt;html lang=&quot;en&quot;&gt;<br>&lt;head&gt;<br>    &lt;meta charset=&quot;UTF-8&quot;&gt;<br>    &lt;title&gt;SQL注入小demo&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>用户名：<br>&lt;form method=&quot;GET&quot;&gt;     //form表单通过get方式接收数据<br>    &lt;input type=&quot;text&quot; name=&quot;name&quot; size=&quot;50&quot; /&gt;    //通过name参数接收数据<br>    &lt;br&gt;<br>    &lt;input type=&quot;submit&quot; value=&quot;点击查询&quot; style=&quot;margin-top:50px;&quot;&gt;<br>    &lt;?php<br>    	$db = mysqli_connect(&quot;localhost&quot;,&quot;root&quot;,&quot;123456&quot;,&quot;demo&quot;); //建立mysql连接<br>    	if(!$db)&#123;<br>    	        echo &quot;数据库链接失败！&quot;;<br>    	        exit();<br>    	&#125;<br><br>    	$name = $_GET[&#x27;name&#x27;]; //通过前端设置的name参数将数据接收到后端进行处理<br>    	$sql = &quot;select * from user where name = &#x27;&quot;.$name.&quot;&#x27;;&quot;;<br>    	echo &quot; 输出当前执行的SQL主句：&quot;.$sql.&quot;&quot;;<br>        $result = mysqli_query($db,$sql);  //执行SQL语句<br><br>    while($row=mysqli_fetch_array($result))   //取出一行数据的所有内容以数组的形式返回<br>    &#123;<br>        echo &quot;账号：&quot;.$row[&#x27;user&#x27;].&quot;&quot;;      //输出一行数据的user字段值<br>        echo &quot;密码：&quot;.$row[&#x27;passwd&#x27;].&quot;&quot;;	//输出一行数据的passwd字段值<br>    &#125;<br>    mysqli_close($db);			//关闭mysql连接<br>    ?&gt;<br>&lt;/form&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-1-PHP-MySQLi基本函数"><a href="#2-1-PHP-MySQLi基本函数" class="headerlink" title="2.1 PHP  MySQLi基本函数"></a>2.1 PHP  MySQLi基本函数</h3><p>​		PHP  MySQLi 函数允许访问 MySQL 数据库服务器。 通俗来说MySQLi 下的函数用来处理PHP中关于数据增删改查的操作。</p>
+<h4 id="mysqli-connect"><a href="#mysqli-connect" class="headerlink" title="mysqli_connect()"></a><strong>mysqli_connect()</strong></h4><p><img src="/img/1653980729657.png" srcset="/img/loading.gif" lazyload alt="1653980729657"></p>
+<h4 id="mysqli-query"><a href="#mysqli-query" class="headerlink" title="mysqli_query()"></a><strong>mysqli_query()</strong></h4><p><img src="/img/1653987719999.png" srcset="/img/loading.gif" lazyload alt="1653987719999"></p>
+<h4 id="mysqli-fetch-array"><a href="#mysqli-fetch-array" class="headerlink" title="mysqli_fetch_array()"></a><strong>mysqli_fetch_array()</strong></h4><p><img src="/img/1653987645959.png" srcset="/img/loading.gif" lazyload alt="1653987645959"></p>
+<h4 id="mysqli-close"><a href="#mysqli-close" class="headerlink" title="mysqli_close()"></a><strong>mysqli_close()</strong></h4><p><img src="/img/1653987813528.png" srcset="/img/loading.gif" lazyload alt="1653987813528"></p>
+<p>为了方便演示实际的业务流程，我们创建<code>demo</code>数据库，并且创建<code>user</code>表，在表中插入演示数据。</p>
+<p><img src="/img/1653980201683.png" srcset="/img/loading.gif" lazyload alt="1653980201683"></p>
+<p>这里简单演示了一下通过查询来获取数据的操作原理。</p>
+<p><img src="/img/1653980529020.png" srcset="/img/loading.gif" lazyload alt="1653980529020"></p>
+<h3 id="1-2-问题引申："><a href="#1-2-问题引申：" class="headerlink" title="1.2 问题引申："></a>1.2 问题引申：</h3><p>​		我们知道某些业务功能会涉及到数据库交互，如上所示，我们是不是可以通过正常功能插入恶意SQL语句来实现我们想要达到的目的呢？</p>
+<p><strong>例如这样：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">1&#x27; union select 1,2,user(),database();#<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/image-20220813185757373.png" srcset="/img/loading.gif" lazyload alt="image-20220813185757373"></p>
+<h2 id="2-SQL注入分类"><a href="#2-SQL注入分类" class="headerlink" title="2.SQL注入分类"></a>2.SQL注入分类</h2><p>​		SQL注入大致分为以下五大类，下面我们通过实际的PHP代码进行分析。</p>
+<p><img src="/img/1654010755088.png" srcset="/img/loading.gif" lazyload alt="1654010755088"></p>
+<h3 id="2-1-报错注入"><a href="#2-1-报错注入" class="headerlink" title="2.1 报错注入"></a>2.1 报错注入</h3><h4 id="2-2-1-示例代码"><a href="#2-2-1-示例代码" class="headerlink" title="2.2.1 示例代码"></a>2.2.1 示例代码</h4><p>​		通过传入<code>id</code>参数且传入的<code>id</code>参数<strong>未做过滤直接拼接到SQL语句中执行</strong>，直接使用<code>mysqli_error()</code>进行报错处理没有对报错进行良好的错误处理，所以导致报错注入的产生。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>]))    <span class="hljs-comment">//判断是否存在id参数传入</span><br>&#123;<br>    <span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">&quot;Content-type:text/html;charset=utf-8&quot;</span>);<br>    <span class="hljs-variable">$db</span> = <span class="hljs-title function_ invoke__">mysqli_connect</span>(<span class="hljs-string">&quot;localhost:3307&quot;</span>,<span class="hljs-string">&quot;root&quot;</span>,<span class="hljs-string">&quot;123456&quot;</span>,<span class="hljs-string">&quot;demo&quot;</span>); <span class="hljs-comment">//连接一个数据库</span><br>    <span class="hljs-keyword">if</span>(!<span class="hljs-variable">$db</span>)&#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;数据库链接失败！&quot;</span>;<br>        <span class="hljs-keyword">exit</span>();<br>    &#125;<br>    <span class="hljs-variable">$id</span>=<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>];				<span class="hljs-comment">//获取id参数值</span><br>    <span class="hljs-variable">$sql</span>=<span class="hljs-string">&quot;SELECT * FROM user WHERE id=&#x27;<span class="hljs-subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;  <span class="hljs-comment">//将id参数值直接拼接到SQL语句</span><br>    <span class="hljs-variable">$result</span>=<span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$db</span>,<span class="hljs-variable">$sql</span>);			<span class="hljs-comment">//执行SQL语句</span><br>    <span class="hljs-variable">$row</span> = @<span class="hljs-title function_ invoke__">mysqli_fetch_array</span>(<span class="hljs-variable">$result</span>);   <span class="hljs-comment">//取出第一行查询到的值以数组形式返回</span><br><br>	<span class="hljs-keyword">if</span>(<span class="hljs-variable">$row</span>)<br>	&#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;Your Login name:&#x27;</span>. <span class="hljs-variable">$row</span>[<span class="hljs-string">&#x27;user&#x27;</span>];  <span class="hljs-comment">//查询到id为xxx的user字段值并输出</span><br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;Your Password:&#x27;</span> .<span class="hljs-variable">$row</span>[<span class="hljs-string">&#x27;passwd&#x27;</span>];  <span class="hljs-comment">//查询到id为xxx的passwd字段值并输出</span><br>	&#125;<br>	<span class="hljs-keyword">else</span><br>	&#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">mysqli_error</span>(<span class="hljs-variable">$db</span>);			<span class="hljs-comment">//如果语句出现错误直接输出错误</span><br>	&#125;<br>    <span class="hljs-title function_ invoke__">mysqli_close</span>(<span class="hljs-variable">$db</span>);				<span class="hljs-comment">//关闭mysql连接</span><br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-1-2-PHP函数介绍"><a href="#2-1-2-PHP函数介绍" class="headerlink" title="2.1.2 PHP函数介绍"></a>2.1.2 PHP函数介绍</h4><p><strong>mysqli_error()</strong></p>
+<p><img src="/img/1654008588721.png" srcset="/img/loading.gif" lazyload alt="1654008588721"></p>
+<h4 id="2-1-3-测试"><a href="#2-1-3-测试" class="headerlink" title="2.1.3 测试"></a>2.1.3 测试</h4><p>当正常查询<code>id=1</code>时输出<code>user</code>以及<code>passwd</code>字段的值<code>php</code>、<code>123456</code>。</p>
+<p><img src="/img/1654006238804.png" srcset="/img/loading.gif" lazyload alt="1654006238804"></p>
+<p>当输入<code>id=1&#39;</code>,mysqli_error()捕获错误信息，并将SQL语句报错。</p>
+<p><img src="/img/1654006369729.png" srcset="/img/loading.gif" lazyload alt="1654006369729"></p>
+<p>我们闭合SQL语句中的单引号即可执行我们想要的查询的内容</p>
+<p>测试语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">1&#x27; and (select extractvalue(&quot;anything&quot;,concat(&#x27;~&#x27;,( user()))))%20--%20dsddsa<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/1654006679963.png" srcset="/img/loading.gif" lazyload alt="1654006679963"></p>
+<h3 id="2-2-宽字节注入"><a href="#2-2-宽字节注入" class="headerlink" title="2.2 宽字节注入"></a>2.2 宽字节注入</h3><h4 id="2-2-1-代码示例"><a href="#2-2-1-代码示例" class="headerlink" title="2.2.1 代码示例"></a>2.2.1 代码示例</h4><p>​		mysql中有一个特性，由于<code>gbk</code>是多字节编码，两个字节代表一个汉字，所以<code>%df</code>和后面的转义字符<code>\</code>也就是<code>%5c</code>会组成了一个汉字<code>運</code>，而<code>&#39;</code>就逃逸了出来造成SQL注入。<strong>在审计SQL注入时，要着重注意MySQL中设置的字符编码，如果为gbk，那么很可能存在宽字节注入。</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>]))<br>&#123;<br>    <span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">&quot;Content-type:text/html;charset=utf-8&quot;</span>);<br>    <span class="hljs-variable">$db</span> = <span class="hljs-title function_ invoke__">mysqli_connect</span>(<span class="hljs-string">&quot;localhost:3307&quot;</span>,<span class="hljs-string">&quot;root&quot;</span>,<span class="hljs-string">&quot;123456&quot;</span>,<span class="hljs-string">&quot;demo&quot;</span>);<br>    <span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$db</span>,<span class="hljs-string">&quot;SET NAMES &#x27;gbk&#x27;&quot;</span>);    <span class="hljs-comment">//设置MySQL字符编码为gbk</span><br>    <span class="hljs-keyword">if</span>(!<span class="hljs-variable">$db</span>)&#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;数据库链接失败！&quot;</span>;<br>        <span class="hljs-keyword">exit</span>();<br>    &#125;<br>    <span class="hljs-variable">$id</span>=<span class="hljs-title function_ invoke__">addslashes</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>]);    <span class="hljs-comment">//通过addslashes()对特殊字符进行转义</span><br>    <span class="hljs-variable">$sql</span>=<span class="hljs-string">&quot;SELECT * FROM user WHERE id=&#x27;<span class="hljs-subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;输出SQL语句：&quot;</span>.<span class="hljs-variable">$sql</span>.<span class="hljs-string">&quot;&lt;br&gt;&lt;br&gt;&quot;</span>;<br>    <span class="hljs-variable">$result</span>=<span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$db</span>,<span class="hljs-variable">$sql</span>);<br>    <span class="hljs-variable">$row</span> = @<span class="hljs-title function_ invoke__">mysqli_fetch_array</span>(<span class="hljs-variable">$result</span>);<br><br>    <span class="hljs-keyword">if</span>(<span class="hljs-variable">$row</span>)     <span class="hljs-comment">//</span><br>    &#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;Your Login name:&#x27;</span>. <span class="hljs-variable">$row</span>[<span class="hljs-string">&#x27;user&#x27;</span>];<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;Your Password:&#x27;</span> .<span class="hljs-variable">$row</span>[<span class="hljs-string">&#x27;passwd&#x27;</span>];<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">mysqli_error</span>(<span class="hljs-variable">$db</span>);<br>    &#125;<br>    <span class="hljs-title function_ invoke__">mysqli_close</span>(<span class="hljs-variable">$db</span>);<br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-2-PHP函数介绍"><a href="#2-2-2-PHP函数介绍" class="headerlink" title="2.2.2 PHP函数介绍"></a>2.2.2 PHP函数介绍</h4><p><strong>addslashes()</strong></p>
+<p><img src="/img/1654008765542.png" srcset="/img/loading.gif" lazyload alt="1654008765542"></p>
+<h4 id="2-2-3-测试"><a href="#2-2-3-测试" class="headerlink" title="2.2.3 测试"></a>2.2.3 测试</h4><p>​		我们发现输入<code>&#39;</code>时，<code>&#39;</code>被addslashes()转义。</p>
+<p><img src="/img/1654009064538.png" srcset="/img/loading.gif" lazyload alt="1654009064538"></p>
+<p>​		我们使用<code>%df</code>和前面的<code>\</code>闭合也就是<code>%5c</code>，然后我们的%27也就是<code>&#39;</code>直接逃逸出来，这时我们就能构造自己想要执行的SQL语句，造成SQL注入。</p>
+<p>测试语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">1%df%27 and extractvalue(1,concat(0x7e,(select user()),0x7e)) -- qwe<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/1654009453981.png" srcset="/img/loading.gif" lazyload alt="1654009453981"></p>
+<h3 id="2-3-盲注"><a href="#2-3-盲注" class="headerlink" title="2.3  盲注"></a>2.3  盲注</h3><p>​		在盲注中不管是布尔盲注还是时间型盲注，页面显示不会有明显的变化，代码审计中只能通过查看源代码闭合原有的SQL语句，然后利用MySQL中延时的方式来判断是否存在SQL注入。</p>
+<h4 id="2-3-1-代码示例"><a href="#2-3-1-代码示例" class="headerlink" title="2.3.1 代码示例"></a>2.3.1 代码示例</h4><p>​		这里为了进行盲注的演示，在代码中特意加入了一条if判断，当<code>mysqli_fetch_array()</code>查询的结果集为<code>NULL</code>的时候，返回id&#x3D;1的数据内容，这就让我们无法判断插入的SQL语句是否执行成功,只能通过延时来进行测试。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>]))<br>&#123;<br>    <span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">&quot;Content-type:text/html;charset=utf-8&quot;</span>);<br>    <span class="hljs-variable">$db</span> = <span class="hljs-title function_ invoke__">mysqli_connect</span>(<span class="hljs-string">&quot;localhost:3307&quot;</span>,<span class="hljs-string">&quot;root&quot;</span>,<span class="hljs-string">&quot;123456&quot;</span>,<span class="hljs-string">&quot;demo&quot;</span>);<br>    <span class="hljs-keyword">if</span>(!<span class="hljs-variable">$db</span>)&#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;数据库链接失败！&quot;</span>;<br>        <span class="hljs-keyword">exit</span>();<br>    &#125;<br>    <span class="hljs-variable">$id</span>=<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>];<br>    <span class="hljs-variable">$sql</span>=<span class="hljs-string">&quot;SELECT * FROM user WHERE id=&#x27;<span class="hljs-subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;<br>    <span class="hljs-variable">$result</span>=<span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$db</span>,<span class="hljs-variable">$sql</span>);<br>    <span class="hljs-variable">$row</span> = @<span class="hljs-title function_ invoke__">mysqli_fetch_array</span>(<span class="hljs-variable">$result</span>);<br>    <span class="hljs-keyword">if</span>(!<span class="hljs-variable">$row</span>)  <span class="hljs-comment">//如果查询的结果集为NULL的话，返回id=1的数据</span><br>    &#123;<br>        <span class="hljs-variable">$sql</span>=<span class="hljs-string">&quot;SELECT * FROM user WHERE id=&#x27;1&#x27; LIMIT 0,1&quot;</span>;<br>        <span class="hljs-variable">$result</span>=<span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$db</span>,<span class="hljs-variable">$sql</span>);<br>        <span class="hljs-variable">$row</span> = @<span class="hljs-title function_ invoke__">mysqli_fetch_array</span>(<span class="hljs-variable">$result</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">if</span>(<span class="hljs-variable">$row</span>)<br>    &#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;Your Login name:&#x27;</span>. <span class="hljs-variable">$row</span>[<span class="hljs-string">&#x27;user&#x27;</span>];<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;Your Password:&#x27;</span> .<span class="hljs-variable">$row</span>[<span class="hljs-string">&#x27;passwd&#x27;</span>];<br>    &#125;<br>    <span class="hljs-title function_ invoke__">mysqli_close</span>(<span class="hljs-variable">$db</span>);<br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-3-2-测试"><a href="#2-3-2-测试" class="headerlink" title="2.3.2 测试"></a>2.3.2 测试</h4><p>当我们查询数据库中存在的数据时返回指定字段的内容</p>
+<p><img src="/img/1654088822877.png" srcset="/img/loading.gif" lazyload alt="1654088822877"></p>
+<p>当我们查询数据库中不存在的数据时，由于<code>mysqli_fetch_array()</code>查询结果为<code>NULL</code>，所以返回id&#x3D;1的指定字段内容</p>
+<p><img src="/img/1654088905570.png" srcset="/img/loading.gif" lazyload alt="1654088905570"></p>
+<p>由于我们在代码审计时可以一目了然看到SQL语句的构造情况,所以我们只需闭合相应的特殊字符，通过sleep()函数使页面延时，从而判断此处是否存在注入点，进而进行下一步的注入。</p>
+<p>测试语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">2312&#x27;%20or%20sleep(5)%20--%20qwe<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/1654089542962.png" srcset="/img/loading.gif" lazyload alt="1654089542962"></p>
+<h3 id="2-4-二次注入"><a href="#2-4-二次注入" class="headerlink" title="2.4 二次注入"></a>2.4 二次注入</h3><h4 id="2-4-1-代码示例"><a href="#2-4-1-代码示例" class="headerlink" title="2.4.1 代码示例"></a>2.4.1 代码示例</h4><p>​		二次注入的逻辑是在第一次<code>insert</code>或<code>update</code>操作时代码存在转义而无法造成注入，但数据在被插入数据库时转义会消失，正常的SQL语句将会被存储到数据库中，在第二次调用插入的数据时被还原的SQL语句将被拼接到正常的SQL语句中造成二次注入。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;user&#x27;</span>]))<br>&#123;<br>    <span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">&quot;Content-type:text/html;charset=utf-8&quot;</span>);<br>    <span class="hljs-variable">$db</span> = <span class="hljs-title function_ invoke__">mysqli_connect</span>(<span class="hljs-string">&quot;localhost:3307&quot;</span>,<span class="hljs-string">&quot;root&quot;</span>,<span class="hljs-string">&quot;123456&quot;</span>,<span class="hljs-string">&quot;demo&quot;</span>);<br>    <span class="hljs-keyword">if</span>(!<span class="hljs-variable">$db</span>)&#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;数据库链接失败！&quot;</span>;<br>        <span class="hljs-keyword">exit</span>();<br>    &#125;<br>    <span class="hljs-comment">//第一次更新操作</span><br>    <span class="hljs-variable">$user</span>=<span class="hljs-title function_ invoke__">addslashes</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;user&#x27;</span>]);<br>    <span class="hljs-variable">$sql</span>=<span class="hljs-string">&quot;update user set user=&#x27;<span class="hljs-subst">$user</span>&#x27; where id=1&quot;</span>;  <span class="hljs-comment">//修改id=1的用户名</span><br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;输出第一次的SQL语句：&quot;</span>.<span class="hljs-variable">$sql</span>.<span class="hljs-string">&quot;&lt;br&gt;&lt;br&gt;&quot;</span>;<br>    <span class="hljs-variable">$result</span>=<span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$db</span>,<span class="hljs-variable">$sql</span>);<br>	<span class="hljs-comment">//第二次查询操作</span><br>    <span class="hljs-variable">$sql</span> = <span class="hljs-string">&quot;select * from user where id=1&quot;</span>;<br>    <span class="hljs-variable">$result</span>=<span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$db</span>,<span class="hljs-variable">$sql</span>);<br>    <span class="hljs-variable">$row</span> = @<span class="hljs-title function_ invoke__">mysqli_fetch_array</span>(<span class="hljs-variable">$result</span>);<br>    <span class="hljs-variable">$sql</span> = <span class="hljs-string">&quot;select * from user where user = &#x27;<span class="hljs-subst">$row</span>[2]&#x27;&quot;</span>;  <span class="hljs-comment">//查询结果集中下标为2(name)的一行数据</span><br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;输出第二次查询的SQL语句:&quot;</span>.<span class="hljs-variable">$sql</span>.<span class="hljs-string">&quot;&lt;br&gt;&lt;br&gt;&quot;</span>;<br>    <span class="hljs-variable">$result</span>=<span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$db</span>,<span class="hljs-variable">$sql</span>);<br>    <span class="hljs-title function_ invoke__">var_dump</span>(<span class="hljs-title function_ invoke__">mysqli_fetch_row</span>(<span class="hljs-variable">$result</span>));  <span class="hljs-comment">//取出查询到的结果集并以数组的形式返回</span><br><br>    <span class="hljs-title function_ invoke__">mysqli_close</span>(<span class="hljs-variable">$db</span>);<br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-4-2-PHP函数介绍"><a href="#2-4-2-PHP函数介绍" class="headerlink" title="2.4.2 PHP函数介绍"></a>2.4.2 PHP函数介绍</h4><p><strong>mysqli_fetch_row()</strong></p>
+<p><img src="/img/1654097242738.png" srcset="/img/loading.gif" lazyload alt="1654097242738"></p>
+<h4 id="2-4-3-测试"><a href="#2-4-3-测试" class="headerlink" title="2.4.3 测试"></a>2.4.3 测试</h4><p>输入<code>&#39;</code>时，<code>&#39;</code>被<code>addslashes()</code>转义，这里无法造成注入</p>
+<p><img src="/img/1654097578086.png" srcset="/img/loading.gif" lazyload alt="1654097578086"></p>
+<p>但在数据库中存储时转义<code>\</code>被清除</p>
+<p><img src="/img/1654097719362.png" srcset="/img/loading.gif" lazyload alt="1654097719362"></p>
+<p>但在第二次调用时转义后的SQL语句被拼接在正常的SQL语句中，造成二次注入。</p>
+<p>测试语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">&#x27; union select 1,2,database(),3 -- qwe<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/1654097912570.png" srcset="/img/loading.gif" lazyload alt="1654097912570"></p>
+<h2 id="3-SQL注入代码审计总结"><a href="#3-SQL注入代码审计总结" class="headerlink" title="3.SQL注入代码审计总结"></a>3.SQL注入代码审计总结</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html">在审计SQL注入的时候，我们首先要找到对应的传参点，更要多关注代码中正常SQL语句的规则和过滤情况，最重要的是要闭合正常的SQL语句来，最终执行我们想要执行的SQL语句。<br></code></pre></td></tr></table></figure>
+
+
+
+<p>ps: Navicat 15安装包以及破解方式同教程一起下发，大家可以根据教程进行破解使用。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>PHP代码审计之WEB安全系列基础文章（一）之SQL注入漏洞篇</div>
+      <div>http://example.com/2022/10/10/PHP代码审计之WEB安全系列基础文章（一）之SQL注入漏洞篇/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Power7089</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月10日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/08/22/JavaWeb%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%9E%E6%88%98%E4%B9%8B%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E5%9F%BA%E7%A1%80-%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3%E7%89%88%E6%9C%AC/" title="JavaWeb代码审计实战之反射机制基础-代码详解版本">
+                        <span class="hidden-mobile">JavaWeb代码审计实战之反射机制基础-代码详解版本</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       欢迎知识星球搜索【炼石计划@Java代码审计】【炼石计划@PHP代码审计】【炼石计划@渗透攻防宇宙】 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
