@@ -16,17 +16,15 @@
   <meta name="author" content="Power7089">
   <meta name="keywords" content="">
   
-    <meta name="description" content="前言：【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  如果你想系统化学习Java代码审计、PHP代码审计、渗透测试，欢迎了解加入对应的知识星球，分别为【炼石计划@J">
+    <meta name="description" content="前言：【如需转载，请详细表明来源，请勿设置原创】 嗨，朋友你好，我是闪石星曜CyberSecurity创始人Power7089。 今天为大家带来的是【炼石计划@Java代码审计】Java代码审计实战阶段文章。内部课程文章部分分享给大家学习，如果你想利用碎片化时间系统学习Java代码审计环境加入我们。 【炼石计划@Java代码审计】是一个利用碎片化时间即可从入门到提升系统化学习Java代码审计的成长">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JavaWeb代码审计实战之某RBAC系统，非常适合小白入门练习的系统">
 <meta property="og:url" content="http://example.com/2022/08/22/JavaWeb%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%9E%E6%88%98%E4%B9%8B%E6%9F%90RBAC%E7%B3%BB%E7%BB%9F%EF%BC%8C%E9%9D%9E%E5%B8%B8%E9%80%82%E5%90%88%E5%B0%8F%E7%99%BD%E5%85%A5%E9%97%A8%E7%BB%83%E4%B9%A0%E7%9A%84%E7%B3%BB%E7%BB%9F/index.html">
 <meta property="og:site_name" content="Power7089">
-<meta property="og:description" content="前言：【如需转载，请详细表明来源，请勿设置原创】 嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。 欢迎大家扫描下方二维码关注 “闪石星曜CyberSecurity” 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。  如果你想系统化学习Java代码审计、PHP代码审计、渗透测试，欢迎了解加入对应的知识星球，分别为【炼石计划@J">
+<meta property="og:description" content="前言：【如需转载，请详细表明来源，请勿设置原创】 嗨，朋友你好，我是闪石星曜CyberSecurity创始人Power7089。 今天为大家带来的是【炼石计划@Java代码审计】Java代码审计实战阶段文章。内部课程文章部分分享给大家学习，如果你想利用碎片化时间系统学习Java代码审计环境加入我们。 【炼石计划@Java代码审计】是一个利用碎片化时间即可从入门到提升系统化学习Java代码审计的成长">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif">
 <meta property="og:image" content="http://example.com/img/%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92@Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.jpg">
-<meta property="og:image" content="http://example.com/img/%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92@PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.jpg">
-<meta property="og:image" content="http://example.com/img/%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92@%E6%B8%97%E9%80%8F%E6%94%BB%E9%98%B2%E5%AE%87%E5%AE%99.jpg">
+<meta property="og:image" content="http://example.com/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif">
 <meta property="og:image" content="http://example.com/img/maven%E7%9A%84pom%E4%BE%8B%E5%AD%90.jpg">
 <meta property="og:image" content="http://example.com/img/maven%E4%BE%9D%E8%B5%96%E7%89%88%E6%9C%AC%E4%BF%A1%E6%81%AF.jpg">
 <meta property="og:image" content="http://example.com/img/maven%E5%88%9B%E5%BB%BA.jpg">
@@ -113,10 +111,10 @@
 <meta property="og:image" content="http://example.com/img/%E5%88%A4%E6%96%ADcaptcha%E4%B8%A4%E5%A4%84%E5%80%BC%E6%98%AF%E5%90%A6%E7%9B%B8%E5%90%8C.jpg">
 <meta property="og:image" content="http://example.com/img/%E5%BC%82%E5%B8%B8%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2.jpg">
 <meta property="article:published_time" content="2022-08-22T02:38:54.000Z">
-<meta property="article:modified_time" content="2022-10-10T02:36:51.737Z">
+<meta property="article:modified_time" content="2022-11-29T14:22:38.477Z">
 <meta property="article:author" content="Power7089">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif">
+<meta name="twitter:image" content="http://example.com/img/%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92@Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.jpg">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -338,7 +336,7 @@
         
         
         
-          197 分钟
+          196 分钟
         
       </span>
     
@@ -382,16 +380,12 @@
               <div class="markdown-body">
                 
                 <h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>【如需转载，请详细表明来源，请勿设置原创】</p>
-<p>嗨，大家好，我是闪石星曜CyberSecurity创始人Power7089。</p>
+<p><em>嗨，朋友你好，我是闪石星曜CyberSecurity创始人Power7089。</em></p>
+<p><em><strong>今天为大家带来的是【炼石计划@Java代码审计】Java代码审计实战阶段文章。内部课程文章部分分享给大家学习，如果你想利用碎片化时间系统学习Java代码审计环境加入我们。</strong></em></p>
+<p><em>【炼石计划@Java代码审计】是一个利用碎片化时间即可从入门到提升系统化学习Java代码审计的成长型知识星球。这里不仅注重夯实基础，更加专注实战进阶。强烈推荐加入我们，一起来内卷Java代码审计。</em></p>
+<p><img src="/img/%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92@Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.jpg" srcset="/img/loading.gif" lazyload alt="炼石计划@Java代码审计"></p>
 <p>欢迎大家扫描下方二维码关注 <strong>“闪石星曜CyberSecurity”</strong> 公众号，这里专注分享渗透测试，Java代码审计，PHP代码审计等内容，都是非常干的干货哦。</p>
 <p><img src="/img/%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.gif" srcset="/img/loading.gif" lazyload alt="公众号"></p>
-<p>如果你想系统化学习Java代码审计、PHP代码审计、渗透测试，欢迎了解加入对应的知识星球，分别为【炼石计划@Java代码审计】，【炼石计划@PHP代码审计】，【炼石计划@渗透攻防宇宙】，知识星球的名称也对应着深入学习的方向。</p>
-<p>炼石计划理念：一个系统化从入门到提升学习的成长型知识星球。这里不仅注重夯实基础，更加专注实战进阶。</p>
-<p>欢迎微信扫描下方二维码，加入对应的知识星球。努力成为六边形网络安全战士！</p>
-<p><img src="/img/%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92@Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.jpg" srcset="/img/loading.gif" lazyload alt="炼石计划@Java代码审计"></p>
-<p><img src="/img/%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92@PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1.jpg" srcset="/img/loading.gif" lazyload alt="炼石计划@PHP代码审计"></p>
-<p><img src="/img/%E7%82%BC%E7%9F%B3%E8%AE%A1%E5%88%92@%E6%B8%97%E9%80%8F%E6%94%BB%E9%98%B2%E5%AE%87%E5%AE%99.jpg" srcset="/img/loading.gif" lazyload alt="炼石计划@渗透攻防宇宙"></p>
-<p>本篇来自【炼石计划@Java代码审计】知识星球内部文章，公益分享学习。欢迎加入我们，系统化学习专业知识。</p>
 <h2 id="一、前置知识"><a href="#一、前置知识" class="headerlink" title="一、前置知识"></a>一、前置知识</h2><h4 id="A、涉及相关技术简介"><a href="#A、涉及相关技术简介" class="headerlink" title="A、涉及相关技术简介"></a><strong>A、涉及相关技术简介</strong></h4><h4 id="A1、Maven简介"><a href="#A1、Maven简介" class="headerlink" title="A1、Maven简介"></a>A1、Maven简介</h4><p>Maven 是一个项目管理工具，它包含了一个项目对象模型（Project Object Model），反映在配置中，就是一个 pom.xml 文件。是一组标准集合，一个项目的生命周期、一个依赖管理系统，另外还包括定义在项目生命周期阶段的插件(plugin)以及目标(goal)。</p>
 <p>当我们使用 Maven 的使用，通过一个自定义的项目对象模型，pom.xml 来详细描述我们自己的项目。</p>
 <p>简单来说，我们开发一个JavaWeb项目是需要加载很多依赖的，使用Maven可以便于管理这些依赖。</p>
