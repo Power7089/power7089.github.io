@@ -4,6 +4,19 @@
   
   
   <entry>
+    <title>Frida在Windows下使用tar包方式安装过程记录</title>
+    <link href="/2022/12/01/Frida%E5%9C%A8Windows%E4%B8%8B%E4%BD%BF%E7%94%A8tar%E5%8C%85%E6%96%B9%E5%BC%8F%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/"/>
+    <url>/2022/12/01/Frida%E5%9C%A8Windows%E4%B8%8B%E4%BD%BF%E7%94%A8tar%E5%8C%85%E6%96%B9%E5%BC%8F%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/</url>
+    
+    <content type="html"><![CDATA[<p>那是一个懒惰的下午，接到测试任务，要对某APP展开测试，万事具备，只差一个Frida&#x3D;&#x3D;15.1.17版本。</p><p>万万没想到，踩了两个小时的坑。</p><p>看似简单，实则困难重重……</p><p>Frida 常规的安装方法是<code>pip3 install frida==15.1.17(指定版本)</code>，但这各种方法各种报错，排查原因折磨了我半天，也许是网络原因，也许是版本原因，绕来绕去太麻烦，脱离了只是为了安装指定版本frida的目的。</p><p>试了一大圈，找到一种安装方式，大家可以试试。</p><p>①、从pypi处下载frida15.1.17的tar包。<a href="https://pypi.org/project/frida/15.1.17/#files">https://pypi.org/project/frida/15.1.17/#files</a></p><p><img src="/img/image-20221130230745314.png" alt="image-20221130230745314"></p><p>②、下载的过程，进入cmd安装依赖环节。先安装<code>pip3 install wheel</code>，不确定是否有影响，但安装总没错。</p><p>③、<code>pip3 install frida-tools</code>，安装firda-tools会自动下载最新版本frida。安装成功我们需要卸载。</p><p>④、卸载最新frida <code>pip3 uninstall frida</code></p><p>⑤、解压刚才下载的tar包。cmd进入该目录，输入命令<code>py -3 setup.py bdist_egg</code></p><p>⑥、然后进入再进入<code>frida-15.1.17</code>下<code>dist</code>目录，键入以下命令</p><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">easy_install</span> frida-<span class="hljs-number">15</span>.<span class="hljs-number">1</span>.<span class="hljs-number">17</span>-py3.<span class="hljs-number">10</span>-win-amd64.egg<br></code></pre></td></tr></table></figure><p>⑦、cmd 输入 frida –version 查看是否安装完成。</p>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>JavaWeb代码审计实战之配合JtopCMS实战讲解目录穿越漏洞</title>
     <link href="/2022/11/29/JavaWeb%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%9E%E6%88%98%E4%B9%8B%E9%85%8D%E5%90%88JtopCMS%E5%AE%9E%E6%88%98%E8%AE%B2%E8%A7%A3%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A%E6%BC%8F%E6%B4%9E/"/>
     <url>/2022/11/29/JavaWeb%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AE%9E%E6%88%98%E4%B9%8B%E9%85%8D%E5%90%88JtopCMS%E5%AE%9E%E6%88%98%E8%AE%B2%E8%A7%A3%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A%E6%BC%8F%E6%B4%9E/</url>
